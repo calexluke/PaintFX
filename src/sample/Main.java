@@ -1,35 +1,40 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.*;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 public class Main extends Application {
-    Group root;
-    Scene scene;
-    VBox vbox;
+    private Group root = new Group();
+    private VBox vbox = new VBox();
+    private Scene scene;
+    private FileManager fileManager = new FileManager();
+    private ImageManager imageManager = new ImageManager();
+
+    private final int menuBarVboxIndex = 0;
+    private final int mainImageVBoxIndex = 1;
+    private final int defaultSceneHeight = 1000;
+    private final int defaultSceneWidth = 1000;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        root = new Group();
-        vbox = new VBox();
         root.getChildren().add(vbox);
-        scene = new Scene(root, 1000, 1000);
+        scene = new Scene(root, defaultSceneWidth, defaultSceneHeight);
+
+        ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleMainImageToSceneSize();
+        scene.widthProperty().addListener(sceneSizeListener);
+        scene.heightProperty().addListener(sceneSizeListener);
 
         configureMenuBar();
-        loadDefaultImage();
+        displayDefaultLogoImage();
 
         primaryStage.setTitle("Pain(t)");
         primaryStage.setScene(scene);
@@ -47,13 +52,11 @@ public class Main extends Application {
 
         // create menu items
         MenuItem quit = new MenuItem("Quit Pain(t)");
-        quit.setOnAction(e -> quitApplication());
-
         MenuItem load = new MenuItem("Load New Image");
-        load.setOnAction(e -> selectNewImage(e));
-
-        MenuItem restore = new MenuItem("Restore default image");
-        restore.setOnAction(e -> loadDefaultImage());
+        MenuItem restore = new MenuItem("Restore main logo image");
+        quit.setOnAction(e -> quitApplication());
+        load.setOnAction(e -> selectNewImage());
+        restore.setOnAction(e -> displayDefaultLogoImage());
 
         // add items to menus
         mainMenu.getItems().add(quit);
@@ -65,63 +68,63 @@ public class Main extends Application {
         menuBar.getMenus().add(imageMenu);
 
         // add menu bar to vbox
-        vbox.getChildren().add(menuBar);
+        vbox.getChildren().add(menuBarVboxIndex, menuBar);
     }
 
     private void quitApplication() {
-        // handle shutdown stuff here
-        Platform.exit();
+        // handle more shutdown stuff here
+        System.exit(0);
     }
 
-    private void selectNewImage(ActionEvent event) {
-        Image newImage;
-        Stage stage = (Stage) root.getScene().getWindow();
-        String filePath = getImageFilePathFromUser(stage);
+    private void selectNewImage() {
+        String filePath = fileManager.getImageFilePathFromUser((Stage)scene.getWindow());
         if (filePath != null) {
             try {
-                newImage = new Image(new FileInputStream(filePath));
-                displayImage(newImage);
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
+                displayMainImage(imageManager.getImageFromFilePath(filePath));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } else {
-            // This should not happen
-            System.out.println("Bad file type");
         }
     }
 
-    private String getImageFilePathFromUser(Stage stage) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Image File");
-        FileChooser.ExtensionFilter filter =
-                new FileChooser.ExtensionFilter("Image files", "*.jpg", "*.jpeg", "*.png", "*.PNG");
-        fileChooser.getExtensionFilters().add(filter);
-
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-            String path = file.getAbsolutePath();
-            return path;
-        } else {
-            return null;
+    private void displayDefaultLogoImage() {
+        Image defaultImage = imageManager.getLogoImage();
+        if (defaultImage != null) {
+            displayMainImage(defaultImage);
         }
     }
 
-    private void loadDefaultImage() {
-        displayImage(new Image("/sample/Assets/PAIN(t).png"));
-    }
-
-    private void displayImage(Image image) {
+    private void displayMainImage(Image image) {
+        ObservableList<Node> childNodes = vbox.getChildren();
         ImageView imageView = new ImageView(image);
+
         imageView.setX(0);
         imageView.setY(0);
-        imageView.setFitHeight(1000);
-        imageView.setFitWidth(1000);
+        imageView.setFitHeight(scene.getHeight() - 40);
+        imageView.setFitWidth(scene.getWidth() - 40);
         imageView.setPreserveRatio(true);
 
-        // If image already exists, remove it
-        if (vbox.getChildren().size() > 1) {
-            vbox.getChildren().remove(1);
+        // If main image already exists, remove it
+        if (childNodes.size() > 1 && childNodes.get(mainImageVBoxIndex) != null) {
+            childNodes.remove(mainImageVBoxIndex);
         }
-        vbox.getChildren().add(imageView);
+        childNodes.add(mainImageVBoxIndex, imageView);
+        VBox.setMargin(childNodes.get(mainImageVBoxIndex), new Insets(20, 20, 20, 20));
+    }
+
+    private void scaleMainImageToSceneSize() {
+        ObservableList<Node> childNodes = vbox.getChildren();
+        Double height = scene.getHeight();
+        Double width = scene.getWidth();
+
+        if (childNodes.size() > 1 && childNodes.get(mainImageVBoxIndex) != null) {
+            try {
+                ImageView mainImageView = (ImageView) childNodes.get(mainImageVBoxIndex);
+                mainImageView.setFitHeight(height - 40);
+                mainImageView.setFitWidth(width - 40);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
