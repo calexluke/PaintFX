@@ -1,4 +1,4 @@
-package sample;
+package com.calexluke;
 
 public class Controller {
 }

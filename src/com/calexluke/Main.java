@@ -1,4 +1,4 @@
-package sample;
+package com.calexluke;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -29,6 +29,7 @@ public class Main extends Application {
         root.getChildren().add(vbox);
         scene = new Scene(root, defaultSceneWidth, defaultSceneHeight);
 
+        // add listener to track changes in scene size
         ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleMainImageToSceneSize();
         scene.widthProperty().addListener(sceneSizeListener);
         scene.heightProperty().addListener(sceneSizeListener);
@@ -114,8 +115,8 @@ public class Main extends Application {
 
     private void scaleMainImageToSceneSize() {
         ObservableList<Node> childNodes = vbox.getChildren();
-        Double height = scene.getHeight();
-        Double width = scene.getWidth();
+        double height = scene.getHeight();
+        double width = scene.getWidth();
 
         if (childNodes.size() > 1 && childNodes.get(mainImageVBoxIndex) != null) {
             try {

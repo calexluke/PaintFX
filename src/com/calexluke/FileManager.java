@@ -1,4 +1,4 @@
-package sample;
+package com.calexluke;
 
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -13,6 +13,7 @@ public class FileManager {
     private final FileChooser.ExtensionFilter imageExtensionFilter = new FileChooser.ExtensionFilter("Image files",
             "*.jpg", "*.jpeg", "*.png", "*.PNG");
 
+    // Returns null if user exits file chooser without making a selection
     public String getImageFilePathFromUser(Stage stage) {
         String path = null;
         FileChooser fileChooser = new FileChooser();
