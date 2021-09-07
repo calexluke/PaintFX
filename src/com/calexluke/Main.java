@@ -115,14 +115,11 @@ public class Main extends Application {
 
     private void scaleMainImageToSceneSize() {
         ObservableList<Node> childNodes = vbox.getChildren();
-        double height = scene.getHeight();
-        double width = scene.getWidth();
-
         if (childNodes.size() > 1 && childNodes.get(mainImageVBoxIndex) != null) {
             try {
                 ImageView mainImageView = (ImageView) childNodes.get(mainImageVBoxIndex);
-                mainImageView.setFitHeight(height - 40);
-                mainImageView.setFitWidth(width - 40);
+                mainImageView.setFitHeight(scene.getHeight() - 40);
+                mainImageView.setFitWidth(scene.getWidth() - 40);
             } catch (Exception e) {
                 e.printStackTrace();
             }
