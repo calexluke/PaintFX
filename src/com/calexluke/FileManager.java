@@ -1,10 +1,14 @@
 package com.calexluke;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.IOException;
 
 // Class for handling file system operations
 
@@ -26,7 +30,24 @@ public class FileManager {
         return path;
     }
 
-    public void saveImageToFile(Image image) {
-        // to be added later
+    public String getSaveAsFilePathFromUser(Stage stage) {
+        String path = null;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Image");
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            path = file.getAbsolutePath();
+        }
+        return path;
+    }
+
+    public void saveImageToFilePath(WritableImage image, String filePath) {
+        File outFile = new File(filePath);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null),
+                    "png", outFile);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }

@@ -8,10 +8,9 @@ import java.io.FileNotFoundException;
 // class for handling Image Operations
 
 public class ImageManager {
-    private final String logoImageFilePath = "/com/calexluke/Assets/PAIN(t).png";
 
     public Image getLogoImage() {
-        return getImageFromAssets(logoImageFilePath);
+        return getImageFromAssets(Constants.logoImageFilePath);
     }
 
     // create Image object from image file in assets folder
@@ -26,7 +25,13 @@ public class ImageManager {
     }
 
     // create Image object from image file in user's local file system
-    public Image getImageFromFilePath(String filePath) throws FileNotFoundException {
-        return new Image(new FileInputStream(filePath));
+    public Image getImageFromFilePath(String filePath) {
+        Image image = null;
+        try {
+            image = new Image(new FileInputStream(filePath));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 }

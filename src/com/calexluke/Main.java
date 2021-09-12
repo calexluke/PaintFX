@@ -1,17 +1,14 @@
 package com.calexluke;
 
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -27,33 +24,23 @@ import java.io.IOException;
 
 public class Main extends Application {
     private Group root = new Group();
-    private VBox vbox = new VBox();
     private BorderPane borderPane;
     private StackPane stackPane;
     private Scene scene;
     private FileManager fileManager = new FileManager();
-    private PaintImage mainImage;
+    private ImageManager imageManager = new ImageManager();
+    private StateManager stateManager;
 
     private Canvas mainCanvas;
     private ImageView mainImageView;
-
-    GraphicsContext graphicsContext;
-
-    private final int mainImageViewStackPaneIndex = 0;
-    private final int mainCanvasStackPaneIndex = 1;
-    private final int defaultSceneHeight = 1000;
-    private final int defaultSceneWidth = 1000;
-    private final int imageOffset = 50;
-    private final String logoImageFilePath = "/com/calexluke/Assets/PAIN(t).png";
+    private GraphicsContext graphicsContext;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        stateManager = new StateManager();
         borderPane = new BorderPane();
         root.getChildren().add(borderPane);
-        //root.getChildren().add(vbox);
-        scene = new Scene(root, defaultSceneWidth, defaultSceneHeight);
-        mainImage = new PaintImage();
-
+        scene = new Scene(root, Constants.defaultSceneWidth, Constants.defaultSceneHeight);
         stackPane = new StackPane();
 
         // add listener to track changes in scene size
@@ -62,10 +49,10 @@ public class Main extends Application {
 //        scene.heightProperty().addListener(sceneSizeListener);
 
         configureMenuBar();
+        configureToolBar();
         borderPane.setCenter(stackPane);
         configureCanvas();
-
-        displayDefaultLogoImage();
+        displayMainImage();
 
 
         primaryStage.setTitle("Pain(t)");
@@ -82,7 +69,6 @@ public class Main extends Application {
         Menu mainMenu = new Menu("Pain(t)");
         Menu imageMenu = new Menu("Image");
         Menu viewMenu = new Menu("View");
-        Menu toolsMenu = new Menu("Tools");
         Menu helpMenu = new Menu("Help");
 
         // paint menu items
@@ -92,12 +78,15 @@ public class Main extends Application {
 
         // image menu items
         MenuItem load = new MenuItem("Load New Image");
-        MenuItem save = new MenuItem("Save Image");
+        MenuItem saveAs = new MenuItem("Save As");
+        MenuItem save = new MenuItem("Save");
         MenuItem restore = new MenuItem("Restore main logo image");
         load.setOnAction(e -> selectNewImage());
+        saveAs.setOnAction(e -> saveImageAs());
         save.setOnAction(e -> saveImage());
         restore.setOnAction(e -> displayDefaultLogoImage());
         imageMenu.getItems().add(restore);
+        imageMenu.getItems().add(saveAs);
         imageMenu.getItems().add(save);
         imageMenu.getItems().add(load);
 
@@ -110,18 +99,6 @@ public class Main extends Application {
         viewMenu.getItems().add(zoomOut);
         viewMenu.getItems().add(autoScale);
 
-        // tools menu items
-        MenuItem mouse = new MenuItem("Mouse");
-        MenuItem line = new MenuItem("Line");
-        mouse.setOnAction(e -> {
-                toolsMenu.setText("Mouse");
-        });
-        line.setOnAction(e -> {
-            toolsMenu.setText("Line");
-        });
-        toolsMenu.getItems().add(mouse);
-        toolsMenu.getItems().add(line);
-
         // help menu items
         MenuItem about = new MenuItem("About");
         MenuItem help = new MenuItem("Help");
@@ -132,12 +109,62 @@ public class Main extends Application {
         menuBar.getMenus().add(mainMenu);
         menuBar.getMenus().add(imageMenu);
         menuBar.getMenus().add(viewMenu);
-        menuBar.getMenus().add(toolsMenu);
         menuBar.getMenus().add(helpMenu);
 
         // add menu bar to vbox
         //vbox.getChildren().add(menuBarVboxIndex, menuBar);
         borderPane.setTop(menuBar);
+    }
+
+    private void configureToolBar() {
+        ToolBar toolBar = new ToolBar();
+
+        // tool buttons
+        Button mouseButton = new Button("Mouse");
+        mouseButton.setOnAction(e -> {
+            stateManager.setSelectedTool(StateManager.ToolType.MOUSE);
+        });
+
+        Button pencilButton = new Button("Pencil");
+        pencilButton.setOnAction(e -> {
+            stateManager.setSelectedTool(StateManager.ToolType.PENCIL);
+        });
+
+        Button lineButton = new Button("Line");
+        lineButton.setOnAction(e -> {
+            stateManager.setSelectedTool(StateManager.ToolType.LINE);
+        });
+
+        toolBar.getItems().add(mouseButton);
+        toolBar.getItems().add(pencilButton);
+        toolBar.getItems().add(lineButton);
+
+
+        ComboBox strokeWidthComboBox = new ComboBox();
+        strokeWidthComboBox.getItems().addAll(
+                StateManager.StrokeWidth.THIN,
+                StateManager.StrokeWidth.MEDIUM,
+                StateManager.StrokeWidth.WIDE);
+        strokeWidthComboBox.setValue(StateManager.StrokeWidth.THIN);
+        strokeWidthComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            stateManager.setSelectedStrokeWidth((StateManager.StrokeWidth) newValue);
+            updateStrokeWidth();
+        });
+        toolBar.getItems().add(strokeWidthComboBox);
+
+        final ColorPicker colorPicker = new ColorPicker();
+        colorPicker.getStyleClass().add("button");
+        colorPicker.setOnAction(colorEvent -> {
+            Color chosenColor = colorPicker.getValue();
+
+            graphicsContext.setStroke(chosenColor);
+
+        });
+        toolBar.getItems().add(colorPicker);
+
+
+        toolBar.setOrientation(Orientation.VERTICAL);
+        borderPane.setLeft(toolBar);
     }
 
     private void quitApplication() {
@@ -149,7 +176,8 @@ public class Main extends Application {
         String filePath = fileManager.getImageFilePathFromUser((Stage)scene.getWindow());
         if (filePath != null) {
             try {
-                mainImage.setImageWithFilePath(filePath);
+                Image newImage = imageManager.getImageFromFilePath(filePath);
+                stateManager.setMainImage(newImage);
                 displayMainImage();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -158,13 +186,14 @@ public class Main extends Application {
     }
 
     private void displayDefaultLogoImage() {
-        mainImage.setImageWithAssetPath(logoImageFilePath);
+        Image logo = imageManager.getLogoImage();
+        stateManager.setMainImage(logo);
         displayMainImage();
     }
 
     // re initialize mainIMageView and repopulate stackpane with imageview and canvas
     private void displayMainImage() {
-        Image image = mainImage.getImage();
+        Image image = stateManager.getMainImage();
 
         if (image != null) {
             // new image view, clear any drawing from canvas
@@ -175,7 +204,6 @@ public class Main extends Application {
             mainImageView.setY(0);
             mainImageView.setPreserveRatio(true);
 
-            //stackPane.getChildren().removeAll();
             while (stackPane.getChildren().size() > 0) {
                 stackPane.getChildren().remove(0);
             }
@@ -191,8 +219,8 @@ public class Main extends Application {
 
     private void scaleMainImageToSceneSize() {
 
-        double newWidth = scene.getWidth() - imageOffset;
-        double newHeight = scene.getHeight() - imageOffset;
+        double newWidth = scene.getWidth() - Constants.imageOffset;
+        double newHeight = scene.getHeight() - Constants.imageOffset;
         mainImageView.setFitHeight(newHeight);
         mainImageView.setFitWidth(newWidth);
 
@@ -216,42 +244,84 @@ public class Main extends Application {
     }
 
     void configureCanvas() {
-        mainCanvas = new Canvas(defaultSceneWidth - imageOffset, defaultSceneHeight - imageOffset);
+        mainCanvas = new Canvas(Constants.defaultSceneWidth - Constants.imageOffset, Constants.defaultSceneHeight - Constants.imageOffset);
         graphicsContext = mainCanvas.getGraphicsContext2D();
         graphicsContext.setFill(Color.GREEN);
         graphicsContext.fillOval(50,50,20,20);
         stackPane.getChildren().add(mainCanvas);
         mainCanvas.toFront();
-        mainCanvas.setOnMouseClicked(mouseEvent -> onClick(mouseEvent));
-
-//        mainCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
-//                new EventHandler<MouseEvent>() {
-//                    @Override
-//                    public void handle(MouseEvent e) {
-//                        graphicsContext.fillOval(e.getX(),e.getY(),20,20);
-//                    }
-//                });
-    }
-
-    void onClick(MouseEvent e) {
-        graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+        //mainCanvas.setOnMouseClicked(mouseEvent -> onClick(mouseEvent));
+        mainCanvas.setOnMouseDragged(mouseEvent -> onDrag(mouseEvent));
+        mainCanvas.setOnMousePressed(e -> onMousePressed(e));
+        mainCanvas.setOnMouseReleased(e -> onMouseReleased(e));
     }
 
 
-    void saveImage() {
+    void onMouseReleased(MouseEvent e) {
+        StateManager.ToolType tool = stateManager.getSelectedTool();
 
+        graphicsContext.closePath();
+        if (tool == StateManager.ToolType.LINE) {
+            graphicsContext.lineTo(e.getX(), e.getY());
+            graphicsContext.closePath();
+            graphicsContext.stroke();
+            System.out.println("X: " + e.getX()+ " Y " + e.getY());
+            // graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+        }
+    }
+
+    void onDrag(MouseEvent e) {
+        if (stateManager.getSelectedTool() == StateManager.ToolType.PENCIL) {
+            graphicsContext.lineTo(e.getX(), e.getY());
+            graphicsContext.stroke();
+        }
+        //graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+    }
+
+    void onMousePressed(MouseEvent e) {
+        //graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+        graphicsContext.beginPath();
+        graphicsContext.moveTo(e.getX(), e.getY());
+    }
+
+    void updateStrokeWidth() {
+        switch (stateManager.getSelectedStrokeWidth()) {
+            case THIN:
+                graphicsContext.setLineWidth(2);
+                break;
+            case MEDIUM:
+                graphicsContext.setLineWidth(5);
+                break;
+            case WIDE:
+                graphicsContext.setLineWidth(10);
+                break;
+            default:
+                graphicsContext.setLineWidth(2);
+        }
+    }
+
+    WritableImage getSnapshotToSave() {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
         //Take snapshot of the scene
         WritableImage writableImage = stackPane.snapshot(params, null);
+        return  writableImage;
+    }
 
-        // Write snapshot to file system as a .png image
-        File outFile = new File("imageops-snapshot.png");
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null),
-                    "png", outFile);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+    void saveImageAs() {
+        String filePath = fileManager.getSaveAsFilePathFromUser((Stage)scene.getWindow());
+        if (filePath != null) {
+            fileManager.saveImageToFilePath(getSnapshotToSave(), filePath);
+            stateManager.setSaveAsFilePath(filePath);
+        }
+    }
+
+    void saveImage() {
+        String filePath = stateManager.getSaveAsFilePath();
+        if (filePath != null) {
+            fileManager.saveImageToFilePath(getSnapshotToSave(), filePath);
+        } else {
+            saveImageAs();
         }
     }
 }
