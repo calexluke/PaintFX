@@ -1,7 +1,6 @@
 package com.calexluke;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
@@ -23,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,20 +34,23 @@ public class Main extends Application {
     private FileManager fileManager = new FileManager();
     private PaintImage mainImage;
 
-    private Canvas testCanvas;
+    private Canvas mainCanvas;
+    private ImageView mainImageView;
 
     GraphicsContext graphicsContext;
 
-
-    private final int menuBarVboxIndex = 0;
-    private final int mainImageVBoxIndex = 0;
+    private final int mainImageViewStackPaneIndex = 0;
+    private final int mainCanvasStackPaneIndex = 1;
     private final int defaultSceneHeight = 1000;
     private final int defaultSceneWidth = 1000;
+    private final int imageOffset = 50;
     private final String logoImageFilePath = "/com/calexluke/Assets/PAIN(t).png";
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        root.getChildren().add(vbox);
+        borderPane = new BorderPane();
+        root.getChildren().add(borderPane);
+        //root.getChildren().add(vbox);
         scene = new Scene(root, defaultSceneWidth, defaultSceneHeight);
         mainImage = new PaintImage();
 
@@ -61,23 +62,10 @@ public class Main extends Application {
 //        scene.heightProperty().addListener(sceneSizeListener);
 
         configureMenuBar();
-        vbox.getChildren().add(stackPane);
+        borderPane.setCenter(stackPane);
+        configureCanvas();
+
         displayDefaultLogoImage();
-
-        testCanvas = new Canvas(1000, 1000);
-        graphicsContext = testCanvas.getGraphicsContext2D();
-        graphicsContext.setFill(Color.GREEN);
-        graphicsContext.fillOval(50,50,20,20);
-        stackPane.getChildren().add(1, testCanvas);
-        testCanvas.toFront();
-
-        testCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        graphicsContext.fillOval(e.getX(),e.getY(),20,20);
-                    }
-                });
 
 
         primaryStage.setTitle("Pain(t)");
@@ -148,7 +136,8 @@ public class Main extends Application {
         menuBar.getMenus().add(helpMenu);
 
         // add menu bar to vbox
-        vbox.getChildren().add(menuBarVboxIndex, menuBar);
+        //vbox.getChildren().add(menuBarVboxIndex, menuBar);
+        borderPane.setTop(menuBar);
     }
 
     private void quitApplication() {
@@ -173,48 +162,81 @@ public class Main extends Application {
         displayMainImage();
     }
 
+    // re initialize mainIMageView and repopulate stackpane with imageview and canvas
     private void displayMainImage() {
         Image image = mainImage.getImage();
 
         if (image != null) {
-            ObservableList<Node> stackNodes = stackPane.getChildren();
-            ImageView imageView = new ImageView(image);
+            // new image view, clear any drawing from canvas
+            mainImageView = new ImageView(image);
+            graphicsContext.clearRect(0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
 
-            imageView.setX(0);
-            imageView.setY(0);
-            imageView.setFitHeight(scene.getHeight() - 40);
-            imageView.setFitWidth(scene.getWidth() - 40);
-            imageView.setPreserveRatio(true);
+            mainImageView.setX(0);
+            mainImageView.setY(0);
+            mainImageView.setPreserveRatio(true);
 
-            // If main imageView already exists, remove it
-            if (stackNodes.size() >= 1 && stackNodes.get(mainImageVBoxIndex) != null) {
-                stackNodes.remove(mainImageVBoxIndex);
+            //stackPane.getChildren().removeAll();
+            while (stackPane.getChildren().size() > 0) {
+                stackPane.getChildren().remove(0);
             }
-            stackNodes.add(mainImageVBoxIndex, imageView);
-            stackPane.setAlignment(Pos.CENTER);
-            stackPane.setOpaqueInsets(new Insets(20, 20, 20, 20));
-            //VBox.setMargin(stackNodes.get(mainImageVBoxIndex), new Insets(20, 20, 20, 20));
+
+            stackPane.getChildren().add(mainImageView);
+            stackPane.getChildren().add(mainCanvas);
+
+            scaleMainImageToSceneSize();
         } else {
             System.out.println("Unable to display main image - mainImage.image is null!");
         }
     }
 
     private void scaleMainImageToSceneSize() {
-        vbox.setMinWidth(scene.getWidth());
-        vbox.setMinHeight(scene.getHeight());
-        vbox.setMaxWidth(scene.getWidth());
-        vbox.setMaxHeight(scene.getHeight());
-//        ObservableList<Node> childNodes = vbox.getChildren();
-//        if (childNodes.size() > 1 && childNodes.get(mainImageVBoxIndex) != null) {
-//            try {
-//                ImageView mainImageView = (ImageView) childNodes.get(mainImageVBoxIndex);
-//                mainImageView.setFitHeight(scene.getHeight() - 40);
-//                mainImageView.setFitWidth(scene.getWidth() - 40);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+
+        double newWidth = scene.getWidth() - imageOffset;
+        double newHeight = scene.getHeight() - imageOffset;
+        mainImageView.setFitHeight(newHeight);
+        mainImageView.setFitWidth(newWidth);
+
+        // workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
+        // will be scaled to maintain aspect ratio.
+        // from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
+        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
+        double imageViewWidth = Math.min(mainImageView.getFitWidth(), mainImageView.getFitHeight() * aspectRatio);
+        double imageViewHeight = Math.min(mainImageView.getFitHeight(), mainImageView.getFitWidth() / aspectRatio);
+
+        mainCanvas.setWidth(imageViewWidth);
+        mainCanvas.setHeight(imageViewHeight);
+
+        borderPane.setMinWidth(scene.getWidth());
+        borderPane.setMinHeight(scene.getHeight());
+        borderPane.setMaxWidth(scene.getWidth());
+        borderPane.setMaxHeight(scene.getHeight());
+
+        stackPane.setAlignment(Pos.CENTER);
+        stackPane.setOpaqueInsets(new Insets(20, 20, 20, 20));
     }
+
+    void configureCanvas() {
+        mainCanvas = new Canvas(defaultSceneWidth - imageOffset, defaultSceneHeight - imageOffset);
+        graphicsContext = mainCanvas.getGraphicsContext2D();
+        graphicsContext.setFill(Color.GREEN);
+        graphicsContext.fillOval(50,50,20,20);
+        stackPane.getChildren().add(mainCanvas);
+        mainCanvas.toFront();
+        mainCanvas.setOnMouseClicked(mouseEvent -> onClick(mouseEvent));
+
+//        mainCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED,
+//                new EventHandler<MouseEvent>() {
+//                    @Override
+//                    public void handle(MouseEvent e) {
+//                        graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+//                    }
+//                });
+    }
+
+    void onClick(MouseEvent e) {
+        graphicsContext.fillOval(e.getX(),e.getY(),20,20);
+    }
+
 
     void saveImage() {
 
