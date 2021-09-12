@@ -1,7 +1,6 @@
 package com.calexluke;
 
 import javafx.application.Application;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -14,13 +13,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
 
 public class Main extends Application {
     private Group root = new Group();
@@ -54,7 +49,6 @@ public class Main extends Application {
         configureCanvas();
         displayMainImage();
 
-
         primaryStage.setTitle("Pain(t)");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -67,7 +61,7 @@ public class Main extends Application {
     private void configureMenuBar() {
         MenuBar menuBar = new MenuBar();
         Menu mainMenu = new Menu("Pain(t)");
-        Menu imageMenu = new Menu("Image");
+        Menu imageMenu = new Menu("File");
         Menu viewMenu = new Menu("View");
         Menu helpMenu = new Menu("Help");
 
@@ -86,8 +80,8 @@ public class Main extends Application {
         save.setOnAction(e -> saveImage());
         restore.setOnAction(e -> displayDefaultLogoImage());
         imageMenu.getItems().add(restore);
-        imageMenu.getItems().add(saveAs);
         imageMenu.getItems().add(save);
+        imageMenu.getItems().add(saveAs);
         imageMenu.getItems().add(load);
 
         // View menu items
@@ -119,29 +113,33 @@ public class Main extends Application {
     private void configureToolBar() {
         ToolBar toolBar = new ToolBar();
 
-        // tool buttons
-        Button mouseButton = new Button("Mouse");
+        // configure tool buttons
+        // toggle group allows selection of only one button at a time
+        ToggleGroup toggleGroup = new ToggleGroup();
+        ToggleButton mouseButton = new ToggleButton("Mouse");
+        ToggleButton pencilButton = new ToggleButton("Pencil");
+        ToggleButton lineButton = new ToggleButton("Line");
         mouseButton.setOnAction(e -> {
             stateManager.setSelectedTool(StateManager.ToolType.MOUSE);
         });
-
-        Button pencilButton = new Button("Pencil");
         pencilButton.setOnAction(e -> {
             stateManager.setSelectedTool(StateManager.ToolType.PENCIL);
         });
-
-        Button lineButton = new Button("Line");
         lineButton.setOnAction(e -> {
             stateManager.setSelectedTool(StateManager.ToolType.LINE);
         });
 
+        toggleGroup.getToggles().add(mouseButton);
+        toggleGroup.getToggles().add(pencilButton);
+        toggleGroup.getToggles().add(lineButton);
         toolBar.getItems().add(mouseButton);
         toolBar.getItems().add(pencilButton);
         toolBar.getItems().add(lineButton);
 
 
+        // configure stroke width combo box
         ComboBox strokeWidthComboBox = new ComboBox();
-        strokeWidthComboBox.getItems().addAll(
+        strokeWidthComboBox.getItems().addAll (
                 StateManager.StrokeWidth.THIN,
                 StateManager.StrokeWidth.MEDIUM,
                 StateManager.StrokeWidth.WIDE);
@@ -152,16 +150,15 @@ public class Main extends Application {
         });
         toolBar.getItems().add(strokeWidthComboBox);
 
+        // configure color picker
         final ColorPicker colorPicker = new ColorPicker();
         colorPicker.getStyleClass().add("button");
+        colorPicker.setValue(Color.BLACK);
         colorPicker.setOnAction(colorEvent -> {
             Color chosenColor = colorPicker.getValue();
-
             graphicsContext.setStroke(chosenColor);
-
         });
         toolBar.getItems().add(colorPicker);
-
 
         toolBar.setOrientation(Orientation.VERTICAL);
         borderPane.setLeft(toolBar);
@@ -265,7 +262,6 @@ public class Main extends Application {
             graphicsContext.lineTo(e.getX(), e.getY());
             graphicsContext.closePath();
             graphicsContext.stroke();
-            System.out.println("X: " + e.getX()+ " Y " + e.getY());
             // graphicsContext.fillOval(e.getX(),e.getY(),20,20);
         }
     }

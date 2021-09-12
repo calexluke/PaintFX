@@ -15,7 +15,11 @@ import java.io.IOException;
 public class FileManager {
 
     private final FileChooser.ExtensionFilter imageExtensionFilter = new FileChooser.ExtensionFilter("Image files",
-            "*.jpg", "*.jpeg", "*.png", "*.PNG");
+             "*.png", "*.PNG", "*.jpg", "*.jpeg");
+    private final FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter(".png",
+            "*.png", "*.PNG");
+    private final FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter(".jpg",
+            "*.jpg", "*.jpeg");
 
     // Returns null if user exits file chooser without making a selection
     public String getImageFilePathFromUser(Stage stage) {
@@ -23,6 +27,8 @@ public class FileManager {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Image File");
         fileChooser.getExtensionFilters().add(imageExtensionFilter);
+        fileChooser.getExtensionFilters().add(pngFilter);
+        fileChooser.getExtensionFilters().add(jpgFilter);
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             path = file.getAbsolutePath();
@@ -34,6 +40,8 @@ public class FileManager {
         String path = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Image");
+        fileChooser.getExtensionFilters().add(pngFilter);
+        fileChooser.getExtensionFilters().add(jpgFilter);
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
             path = file.getAbsolutePath();
