@@ -1,6 +1,9 @@
 package com.calexluke;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -13,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -21,6 +25,7 @@ public class Main extends Application {
     private Group root = new Group();
     private BorderPane borderPane;
     private StackPane stackPane;
+
     private Scene scene;
     private FileManager fileManager = new FileManager();
     private ImageManager imageManager = new ImageManager();
@@ -29,6 +34,13 @@ public class Main extends Application {
     private Canvas mainCanvas;
     private ImageView mainImageView;
     private GraphicsContext graphicsContext;
+    private ScrollBar horizontalScrollBar;
+    private ScrollBar verticalScrollBar;
+    private ToolBar toolBar;
+    private MenuBar menuBar;
+
+    // default value, approximation of border widths. Will be reset dynamically after init
+    private Double imageSizeOffset = 177.0;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -38,28 +50,57 @@ public class Main extends Application {
         scene = new Scene(root, Constants.defaultSceneWidth, Constants.defaultSceneHeight);
         stackPane = new StackPane();
 
-        // add listener to track changes in scene size
-//        ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleMainImageToSceneSize();
-//        scene.widthProperty().addListener(sceneSizeListener);
-//        scene.heightProperty().addListener(sceneSizeListener);
-
+        borderPane.setCenter(stackPane);
         configureMenuBar();
         configureToolBar();
-        borderPane.setCenter(stackPane);
+
         configureCanvas();
-        displayMainImage();
+        configureScrollBars();
+
+        // add listener to track changes in scene size
+        ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleBorderPaneToSceneSize();
+        scene.widthProperty().addListener(sceneSizeListener);
+        scene.heightProperty().addListener(sceneSizeListener);
 
         primaryStage.setTitle("Pain(t)");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        imageSizeOffset = toolBar.getWidth() + verticalScrollBar.getWidth() + (Constants.imageInsetValue);
+
+        displayMainImage();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
+    private void configureScrollBars() {
+        horizontalScrollBar = new ScrollBar();
+        verticalScrollBar = new ScrollBar();
+        verticalScrollBar.setOrientation(Orientation.VERTICAL);
+
+        BorderPane.setAlignment(horizontalScrollBar, Pos.BOTTOM_LEFT);
+        BorderPane.setAlignment(verticalScrollBar, Pos.TOP_RIGHT);
+        borderPane.setBottom(horizontalScrollBar);
+        borderPane.setRight(verticalScrollBar);
+
+        ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> {
+            stackPane.setTranslateX(-newVal.doubleValue());
+        };
+
+        ChangeListener<Number> verticalValueChangeListener = (ov, oldVal, newVal) -> {
+            stackPane.setTranslateY(-newVal.doubleValue());
+            System.out.println("Scrollbar value: " + newVal);
+        };
+
+        horizontalScrollBar.valueProperty().addListener(horizontalValueChangeListener);
+        verticalScrollBar.valueProperty().addListener(verticalValueChangeListener);
+
+    }
+
     private void configureMenuBar() {
-        MenuBar menuBar = new MenuBar();
+        menuBar = new MenuBar();
         Menu mainMenu = new Menu("Pain(t)");
         Menu imageMenu = new Menu("File");
         Menu viewMenu = new Menu("View");
@@ -111,7 +152,9 @@ public class Main extends Application {
     }
 
     private void configureToolBar() {
-        ToolBar toolBar = new ToolBar();
+        toolBar = new ToolBar();
+        // constructor param is default space between elements
+        VBox toolVbox = new VBox(5);
 
         // configure tool buttons
         // toggle group allows selection of only one button at a time
@@ -119,6 +162,12 @@ public class Main extends Application {
         ToggleButton mouseButton = new ToggleButton("Mouse");
         ToggleButton pencilButton = new ToggleButton("Pencil");
         ToggleButton lineButton = new ToggleButton("Line");
+
+        // all buttons will be the width of the VBox
+        mouseButton.setMaxWidth(Double.MAX_VALUE);
+        pencilButton.setMaxWidth(Double.MAX_VALUE);
+        lineButton.setMaxWidth(Double.MAX_VALUE);
+
         mouseButton.setOnAction(e -> {
             stateManager.setSelectedTool(StateManager.ToolType.MOUSE);
         });
@@ -132,13 +181,13 @@ public class Main extends Application {
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
         toggleGroup.getToggles().add(lineButton);
-        toolBar.getItems().add(mouseButton);
-        toolBar.getItems().add(pencilButton);
-        toolBar.getItems().add(lineButton);
-
+        toolVbox.getChildren().add(mouseButton);
+        toolVbox.getChildren().add(pencilButton);
+        toolVbox.getChildren().add(lineButton);
 
         // configure stroke width combo box
         ComboBox strokeWidthComboBox = new ComboBox();
+        strokeWidthComboBox.setMaxWidth(Double.MAX_VALUE);
         strokeWidthComboBox.getItems().addAll (
                 StateManager.StrokeWidth.THIN,
                 StateManager.StrokeWidth.MEDIUM,
@@ -148,18 +197,21 @@ public class Main extends Application {
             stateManager.setSelectedStrokeWidth((StateManager.StrokeWidth) newValue);
             updateStrokeWidth();
         });
-        toolBar.getItems().add(strokeWidthComboBox);
+        toolVbox.getChildren().add(strokeWidthComboBox);
+
 
         // configure color picker
-        final ColorPicker colorPicker = new ColorPicker();
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setMaxWidth(Double.MAX_VALUE);
         colorPicker.getStyleClass().add("button");
         colorPicker.setValue(Color.BLACK);
         colorPicker.setOnAction(colorEvent -> {
             Color chosenColor = colorPicker.getValue();
             graphicsContext.setStroke(chosenColor);
         });
-        toolBar.getItems().add(colorPicker);
+        toolVbox.getChildren().add(colorPicker);
 
+        toolBar.getItems().add(toolVbox);
         toolBar.setOrientation(Orientation.VERTICAL);
         borderPane.setLeft(toolBar);
     }
@@ -213,35 +265,36 @@ public class Main extends Application {
             System.out.println("Unable to display main image - mainImage.image is null!");
         }
     }
-
     private void scaleMainImageToSceneSize() {
+        System.out.println("Image size offset when resizing: " + imageSizeOffset);
 
-        double newWidth = scene.getWidth() - Constants.imageOffset;
-        double newHeight = scene.getHeight() - Constants.imageOffset;
+        double newWidth = scene.getWidth() - imageSizeOffset;
+        double newHeight = scene.getHeight() - imageSizeOffset;
+        scaleMainImage(newWidth, newHeight);
+        scaleBorderPaneToSceneSize();
+    }
+
+    private void scaleMainImage(double newWidth, double newHeight) {
+
         mainImageView.setFitHeight(newHeight);
         mainImageView.setFitWidth(newWidth);
+        scaleCanvasToImageSize();
 
+        stackPane.setAlignment(Pos.CENTER);
+        stackPane.setTranslateX(0);
+        stackPane.setTranslateY(0);
+    }
+
+    private void scaleCanvasToImageSize() {
         // workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
         // will be scaled to maintain aspect ratio.
         // from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
-        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
-        double imageViewWidth = Math.min(mainImageView.getFitWidth(), mainImageView.getFitHeight() * aspectRatio);
-        double imageViewHeight = Math.min(mainImageView.getFitHeight(), mainImageView.getFitWidth() / aspectRatio);
-
-        mainCanvas.setWidth(imageViewWidth);
-        mainCanvas.setHeight(imageViewHeight);
-
-        borderPane.setMinWidth(scene.getWidth());
-        borderPane.setMinHeight(scene.getHeight());
-        borderPane.setMaxWidth(scene.getWidth());
-        borderPane.setMaxHeight(scene.getHeight());
-
-        stackPane.setAlignment(Pos.CENTER);
-        stackPane.setOpaqueInsets(new Insets(20, 20, 20, 20));
+        mainCanvas.setWidth(getActualImageViewWidth());
+        mainCanvas.setHeight(getActualImageViewHeight());
     }
 
     void configureCanvas() {
-        mainCanvas = new Canvas(Constants.defaultSceneWidth - Constants.imageOffset, Constants.defaultSceneHeight - Constants.imageOffset);
+        mainCanvas = new Canvas(Constants.defaultSceneWidth - imageSizeOffset, Constants.defaultSceneHeight - imageSizeOffset);
         graphicsContext = mainCanvas.getGraphicsContext2D();
         graphicsContext.setFill(Color.GREEN);
         graphicsContext.fillOval(50,50,20,20);
@@ -319,5 +372,82 @@ public class Main extends Application {
         } else {
             saveImageAs();
         }
+    }
+
+    void scaleBorderPaneToSceneSize() {
+        borderPane.setMinWidth(scene.getWidth());
+        borderPane.setMinHeight(scene.getHeight());
+        borderPane.setMaxWidth(scene.getWidth());
+        borderPane.setMaxHeight(scene.getHeight());
+
+        updateScrollBars();
+    }
+
+
+    /*
+    The scroll bar will translate the image by the scrollbar's value.
+    These methods will dynamically update the bounds of the scroll bar based on how far the image is "offscreen."
+    The lower and upper bounds of the scrollbar will be the amount the image needs to be translated to be back
+    "onscreen."
+    */
+    private void updateScrollBars() {
+        Bounds imageBoundsInScene = stackPane.localToScene(stackPane.getBoundsInLocal());
+        updateHorizontalScrollBar(imageBoundsInScene);
+        updateVerticalScrollBar(imageBoundsInScene);
+    }
+
+    private void setScrollBarBounds(ScrollBar scrollBar, double min, double max) {
+        scrollBar.setMin(min);
+        scrollBar.setMax(max);
+        scrollBar.setValue(0);
+
+        // scrollbar thumb takes up half of the current range
+        double range = max - min;
+        scrollBar.setVisibleAmount(range / 2);
+    }
+
+    private void updateVerticalScrollBar(Bounds boundsOfImage) {
+        // actual image y values
+        double imageTopY = boundsOfImage.getMinY();
+        double imageBottomY = boundsOfImage.getMaxY();
+
+        // x values where the edges of the image should be if the image is in frame
+        double verticalMin = menuBar.getHeight() + (Constants.imageInsetValue / 2);
+        double verticalMax = scene.getHeight() - horizontalScrollBar.getHeight() - (Constants.imageInsetValue / 2);
+
+        // Amount the image needs to be translated to be back in frame
+        double newScrollBarMin = -(verticalMin - imageTopY);
+        double newScrollBarMax = imageBottomY - verticalMax;
+
+        setScrollBarBounds(verticalScrollBar, newScrollBarMin, newScrollBarMax);
+    }
+
+    private void updateHorizontalScrollBar(Bounds boundsOfImage) {
+        // actual image x values
+        double imageLeftX = boundsOfImage.getMinX();
+        double imageRightX = boundsOfImage.getMaxX();
+
+        // x values where the edges of the image should be if the image is in frame
+        double horizontalMin = toolBar.getWidth() + (Constants.imageInsetValue / 2);
+        double horizontalMax = scene.getWidth() - verticalScrollBar.getWidth() - (Constants.imageInsetValue / 2);
+
+        // Amount the image needs to be translated to be back in frame
+        double newScrollBarMin = -(horizontalMin - imageLeftX);
+        double newScrollBarMax = imageRightX - horizontalMax;
+
+        setScrollBarBounds(horizontalScrollBar, newScrollBarMin, newScrollBarMax);
+    }
+
+
+    private double getActualImageViewHeight() {
+        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
+        double imageViewHeight = Math.min(mainImageView.getFitHeight(), mainImageView.getFitWidth() / aspectRatio);
+        return imageViewHeight;
+    }
+
+    private double getActualImageViewWidth() {
+        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
+        double imageViewWidth = Math.min(mainImageView.getFitWidth(), mainImageView.getFitHeight() * aspectRatio);
+        return imageViewWidth;
     }
 }
