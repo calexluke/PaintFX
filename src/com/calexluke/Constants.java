@@ -7,5 +7,22 @@ public class Constants {
     static public int defaultSceneWidth = 1000;
     static public int imageInsetValue = 40;
 
+    static public String aboutAlertTitle = "About Pain(t)";
+    static public String helpAlertTitle = "How to Use";
+
+    static public String helpAlertText = """
+                                        Get busy living
+                                        or
+                                        get busy dying.
+                                        --Stephen King
+                                        """;
+
+    static public String aboutAlertText = """
+                                        Multi-line
+                                        text goes
+                                        here.
+                                        """;
+
+
 
 }

@@ -5,6 +5,7 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -12,12 +13,23 @@ import java.io.IOException;
 
 public class FileManager {
 
+    // stage reference is needed to display file pickers
+    private Stage stage;
+    private StateManager stateManager;
+
     private final FileChooser.ExtensionFilter imageExtensionFilter = new FileChooser.ExtensionFilter("Image files",
              "*.png", "*.PNG", "*.jpg", "*.jpeg");
     private final FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter(".png",
             "*.png", "*.PNG");
     private final FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter(".jpg",
             "*.jpg", "*.jpeg");
+
+    public FileManager(Stage stage, StateManager stateManager) {
+        this.stage = stage;
+        this.stateManager = stateManager;
+    }
+
+    //region Public Methods
 
     // Returns null if user exits file chooser without making a selection
     public String getImageFilePathFromUser(Stage stage) {
@@ -34,7 +46,30 @@ public class FileManager {
         return path;
     }
 
-    public String getSaveAsFilePathFromUser(Stage stage) {
+    // user chooses new file path to save to
+    public void saveImageAs(WritableImage image) {
+        String filePath = getSaveAsFilePathFromUser();
+        if (filePath != null) {
+            saveImageToFilePath(image, filePath);
+            stateManager.setSaveAsFilePath(filePath);
+        }
+    }
+
+    // if filepath already exists, save there. If not, save as.
+    public void saveImage(WritableImage image) {
+        String filePath = stateManager.getSaveAsFilePath();
+        if (filePath != null) {
+            saveImageToFilePath(image, filePath);
+        } else {
+            saveImageAs(image);
+        }
+    }
+
+    //endregion
+
+    //region Private Methods
+
+    private String getSaveAsFilePathFromUser() {
         String path = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Image");
@@ -47,13 +82,22 @@ public class FileManager {
         return path;
     }
 
-    public void saveImageToFilePath(WritableImage image, String filePath) {
+    private void saveImageToFilePath(WritableImage image, String filePath) {
         File outFile = new File(filePath);
         try {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null),
-                    "png", outFile);
+            if (filePath.endsWith("png")) {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null),
+                        "png", outFile);
+            } else if (filePath.endsWith("jpg")) {
+                // have to convert file formats to save as JPG
+                ImageManager imageManager = new ImageManager();
+                BufferedImage convertedImage = imageManager.getBufferedImageForJPG(image);
+                ImageIO.write(convertedImage, "jpg", outFile);
+            }
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
+
+    //endregion
 }
