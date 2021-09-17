@@ -27,14 +27,16 @@ public class Main extends Application {
 
     private PaintFxCanvas mainCanvas;
     private ImageView mainImageView;
-    private ScrollBar horizontalScrollBar;
-    private ScrollBar verticalScrollBar;
+    private PaintFxScrollBar horizontalScrollBar;
+    private PaintFxScrollBar verticalScrollBar;
     private ToolBar toolBar;
     private MenuBar menuBar;
 
-    // default values, approximations of widths of border elements. Will be reset dynamically after init
+    // default values, approximations of widths of border elements. These are reset dynamically after init
     private Double imageWidthOffset = 178.0;
     private Double imageHeightOffset = 84.0;
+
+    //region Lifecycle
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -65,9 +67,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-
-
-        // this has to happen after the stage shows the scene, otherwise the toolbar and menubar won't have heights
+        // this has to happen after the stage shows the scene, or the toolbar and menubar won't have correct height/width
         imageWidthOffset = toolBar.getWidth() + verticalScrollBar.getWidth() + (Constants.imageInsetValue);
         imageHeightOffset = menuBar.getHeight() + horizontalScrollBar.getHeight() + (Constants.imageInsetValue);
 
@@ -83,6 +83,8 @@ public class Main extends Application {
         // handle more shutdown stuff here
         System.exit(0);
     }
+
+    //endregion
 
     //region Configuration Methods
 
@@ -101,15 +103,14 @@ public class Main extends Application {
     }
 
     private void configureScrollBars() {
-        horizontalScrollBar = new ScrollBar();
-        verticalScrollBar = new ScrollBar();
+        horizontalScrollBar = new PaintFxScrollBar();
+        verticalScrollBar = new PaintFxScrollBar();
         verticalScrollBar.setOrientation(Orientation.VERTICAL);
-
-        BorderPane.setAlignment(horizontalScrollBar, Pos.BOTTOM_LEFT);
-        BorderPane.setAlignment(verticalScrollBar, Pos.TOP_RIGHT);
         borderPane.setBottom(horizontalScrollBar);
         borderPane.setRight(verticalScrollBar);
 
+        // listeners for scrollbar value change
+        // translate image in x or y direction based on scrollbar value
         ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> {
             stackPane.setTranslateX(-newVal.doubleValue());
         };
@@ -288,7 +289,7 @@ public class Main extends Application {
         return imageViewWidth;
     }
 
-    void scaleBorderPaneToSceneSize() {
+    private void scaleBorderPaneToSceneSize() {
         borderPane.setMinWidth(scene.getWidth());
         borderPane.setMinHeight(scene.getHeight());
         borderPane.setMaxWidth(scene.getWidth());
@@ -309,50 +310,25 @@ public class Main extends Application {
     */
     private void updateScrollBars() {
         Bounds imageBoundsInScene = stackPane.localToScene(stackPane.getBoundsInLocal());
-        updateHorizontalScrollBar(imageBoundsInScene);
-        updateVerticalScrollBar(imageBoundsInScene);
-    }
 
-    private void setScrollBarBounds(ScrollBar scrollBar, double min, double max) {
-        scrollBar.setMin(min);
-        scrollBar.setMax(max);
-        scrollBar.setValue(0);
-
-        // scrollbar thumb takes up half of the current range
-        double range = max - min;
-        scrollBar.setVisibleAmount(range / 2);
-    }
-
-    private void updateVerticalScrollBar(Bounds boundsOfImage) {
         // actual image y values
-        double imageTopY = boundsOfImage.getMinY();
-        double imageBottomY = boundsOfImage.getMaxY();
+        double imageTopY = imageBoundsInScene.getMinY();
+        double imageBottomY = imageBoundsInScene.getMaxY();
 
-        // x values where the edges of the image should be if the image is in frame
+        // actual image x values
+        double imageLeftX = imageBoundsInScene.getMinX();
+        double imageRightX = imageBoundsInScene.getMaxX();
+
+        // Y values where the edges of the image should be if the image is in frame
         double verticalMin = menuBar.getHeight() + (Constants.imageInsetValue / 2);
         double verticalMax = scene.getHeight() - horizontalScrollBar.getHeight() - (Constants.imageInsetValue / 2);
-
-        // Amount the image needs to be translated to be back in frame
-        double newScrollBarMin = -(verticalMin - imageTopY);
-        double newScrollBarMax = imageBottomY - verticalMax;
-
-        setScrollBarBounds(verticalScrollBar, newScrollBarMin, newScrollBarMax);
-    }
-
-    private void updateHorizontalScrollBar(Bounds boundsOfImage) {
-        // actual image x values
-        double imageLeftX = boundsOfImage.getMinX();
-        double imageRightX = boundsOfImage.getMaxX();
 
         // x values where the edges of the image should be if the image is in frame
         double horizontalMin = toolBar.getWidth() + (Constants.imageInsetValue / 2);
         double horizontalMax = scene.getWidth() - verticalScrollBar.getWidth() - (Constants.imageInsetValue / 2);
 
-        // Amount the image needs to be translated to be back in frame
-        double newScrollBarMin = -(horizontalMin - imageLeftX);
-        double newScrollBarMax = imageRightX - horizontalMax;
-
-        setScrollBarBounds(horizontalScrollBar, newScrollBarMin, newScrollBarMax);
+        horizontalScrollBar.updateScrollBarBounds(imageLeftX, imageRightX, horizontalMin, horizontalMax);
+        verticalScrollBar.updateScrollBarBounds(imageTopY, imageBottomY, verticalMin, verticalMax);
     }
 
     //endregion
