@@ -1,0 +1,42 @@
+PaintFX Version 1.1.0 09/16/2021
+
+New Features:
+	•	User can draw a line and use pencil tool on the image
+	•	User can choose the width of the line drawn and the color
+	•	User can save (and save as) the image to file
+	•	User can use scroll bars to ensure image stays in the frame
+	•	User can navigate to “help” and “about” menu options to see more information
+
+Known Issues:
+	•	Zoom+ and Zoom- menu items are not currently functional
+	•	The pencil look produces some jagged-looking lines when making very sharp curves on the widest line-width setting
+
+Expected Next Sprint:
+	•	Zoom in, zoom out
+	•	Undo
+	•	Eraser tool
+
+Links:
+	•	https://github.com/calexluke/PaintFX
+
+
+
+PaintFX Version 1.0.0 09/06/2021
+
+New Features:
+	•	User can select and view an image from their local file system
+	•	Currently supported file types are .jpg, .jpeg, and .png
+	•	User can restore the default logo image
+	•	Menu bar items: quit the app, load new image, restore default image
+	•	Image size scales dynamically with the window size, maintaining aspect ratio
+
+Known Issues:
+	•	There are some “magic numbers” regarding the insets and margins of the image displayed int he window. This should be addressed.
+	•	In some instances, when resizing the window, the bottom of the image will not display the inset padding and will be right up against the bottom of the window
+
+Expected Next Sprint:
+	•	Make edits to images
+	•	Save image to file system
+
+Links:
+	•	https://github.com/calexluke/PaintFX
