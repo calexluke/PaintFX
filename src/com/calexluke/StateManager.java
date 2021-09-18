@@ -25,7 +25,7 @@ public class StateManager {
     }
 
     private Image mainImage;
-    private ToolType selectedTool;
+    private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
     private Color selectedColor;
     private String saveAsFilePath;
@@ -37,7 +37,7 @@ public class StateManager {
 
     public StateManager() {
         ImageManager imageManager = new ImageManager();
-        selectedTool = ToolType.MOUSE;
+        selectedTool = new MouseTool();
         selectedStrokeWidth = StrokeWidth.THIN;
         selectedColor = Color.BLACK;
         saveAsFilePath = null;
@@ -49,7 +49,7 @@ public class StateManager {
     public void setMainImage(Image image) {
         mainImage = image;
     }
-    public void setSelectedTool(ToolType tool) {
+    public void setSelectedTool(PaintFxTool tool) {
         selectedTool = tool;
     }
     public void setSelectedColor (Color color) {
@@ -67,7 +67,7 @@ public class StateManager {
     public Image getMainImage() {
         return mainImage;
     }
-    public ToolType getSelectedTool() {
+    public PaintFxTool getSelectedTool() {
         return selectedTool;
     }
     public Color getSelectedColor() {

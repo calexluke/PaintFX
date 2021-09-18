@@ -35,9 +35,9 @@ public class PaintFxToolbar extends ToolBar {
         pencilButton.setMaxWidth(Double.MAX_VALUE);
         lineButton.setMaxWidth(Double.MAX_VALUE);
 
-        mouseButton.setOnAction(e -> stateManager.setSelectedTool(StateManager.ToolType.MOUSE));
-        pencilButton.setOnAction(e -> stateManager.setSelectedTool(StateManager.ToolType.PENCIL));
-        lineButton.setOnAction(e -> stateManager.setSelectedTool(StateManager.ToolType.LINE));
+        mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
+        pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
+        lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
 
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);

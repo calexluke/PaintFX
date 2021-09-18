@@ -63,25 +63,18 @@ public class PaintFxCanvas extends Canvas {
 
     private void onMouseReleased(MouseEvent e) {
         updateGraphicsContext();
-        StateManager.ToolType tool = stateManager.getSelectedTool();
-        graphicsContext.closePath();
-        if (tool == StateManager.ToolType.LINE) {
-            graphicsContext.lineTo(e.getX(), e.getY());
-            graphicsContext.closePath();
-            graphicsContext.stroke();
-        }
+        PaintFxTool tool = stateManager.getSelectedTool();
+        tool.onMouseReleased(e, graphicsContext);
     }
 
     private void onDrag(MouseEvent e) {
         updateGraphicsContext();
-        if (stateManager.getSelectedTool() == StateManager.ToolType.PENCIL) {
-            graphicsContext.lineTo(e.getX(), e.getY());
-            graphicsContext.stroke();
-        }
+        PaintFxTool tool = stateManager.getSelectedTool();
+        tool.onDrag(e, graphicsContext);
     }
 
     private void onMousePressed(MouseEvent e) {
-        graphicsContext.beginPath();
-        graphicsContext.moveTo(e.getX(), e.getY());
+        PaintFxTool tool = stateManager.getSelectedTool();
+        tool.onMousePressed(e, graphicsContext);
     }
 }
