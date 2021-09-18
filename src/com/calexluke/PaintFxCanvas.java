@@ -33,7 +33,7 @@ public class PaintFxCanvas extends Canvas {
     // called when user wants to draw a graphic - ensure color and stroke width are up to date with user preferences
     public void updateGraphicsContext() {
         updateStrokeWidth();
-        updateFillColor();
+        updateColors();
     }
 
     private void updateStrokeWidth() {
@@ -52,9 +52,11 @@ public class PaintFxCanvas extends Canvas {
         }
     }
 
-    private void updateFillColor() {
-        Color userColor = stateManager.getSelectedColor();
-        graphicsContext.setStroke(userColor);
+    private void updateColors() {
+        Color strokeColor = stateManager.getStrokeColor();
+        Color fillColor = stateManager.getFillColor();
+        graphicsContext.setStroke(strokeColor);
+        graphicsContext.setFill(fillColor);
     }
 
     public void clearGraphicsContext() {

@@ -27,7 +27,8 @@ public class StateManager {
     private Image mainImage;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
-    private Color selectedColor;
+    private Color strokeColor;
+    private Color fillColor;
     private String saveAsFilePath;
 
     // will be used to handle undo operations
@@ -39,7 +40,8 @@ public class StateManager {
         ImageManager imageManager = new ImageManager();
         selectedTool = new MouseTool();
         selectedStrokeWidth = StrokeWidth.THIN;
-        selectedColor = Color.BLACK;
+        strokeColor = Color.BLACK;
+        fillColor = Color.BLACK;
         saveAsFilePath = null;
         mainImage = imageManager.getLogoImage();
     }
@@ -52,8 +54,11 @@ public class StateManager {
     public void setSelectedTool(PaintFxTool tool) {
         selectedTool = tool;
     }
-    public void setSelectedColor (Color color) {
-        selectedColor = color;
+    public void setStrokeColor(Color color) {
+        strokeColor = color;
+    }
+    public void setFillColor(Color color) {
+        fillColor = color;
     }
     public void setSelectedStrokeWidth(StrokeWidth width) {
         selectedStrokeWidth = width;
@@ -70,8 +75,11 @@ public class StateManager {
     public PaintFxTool getSelectedTool() {
         return selectedTool;
     }
-    public Color getSelectedColor() {
-        return selectedColor;
+    public Color getStrokeColor() {
+        return strokeColor;
+    }
+    public Color getFillColor() {
+        return fillColor;
     }
     public StrokeWidth getSelectedStrokeWidth() {
         return selectedStrokeWidth;

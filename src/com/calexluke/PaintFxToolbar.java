@@ -20,7 +20,7 @@ public class PaintFxToolbar extends ToolBar {
         this.setOrientation(Orientation.VERTICAL);
         configureToggleButtons();
         configureComboBox();
-        configureColorPicker();
+        configureColorPickers();
     }
 
     private void configureToggleButtons() {
@@ -29,22 +29,27 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton mouseButton = new ToggleButton("Mouse");
         ToggleButton pencilButton = new ToggleButton("Pencil");
         ToggleButton lineButton = new ToggleButton("Line");
+        ToggleButton squareButton = new ToggleButton("Square");
 
         // all buttons will be the width of the VBox
         mouseButton.setMaxWidth(Double.MAX_VALUE);
         pencilButton.setMaxWidth(Double.MAX_VALUE);
         lineButton.setMaxWidth(Double.MAX_VALUE);
+        squareButton.setMaxWidth(Double.MAX_VALUE);
 
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
+        squareButton.setOnAction(e -> stateManager.setSelectedTool(new SquareTool()));
 
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
         toggleGroup.getToggles().add(lineButton);
+        toggleGroup.getToggles().add(squareButton);
         toolVbox.getChildren().add(mouseButton);
         toolVbox.getChildren().add(pencilButton);
         toolVbox.getChildren().add(lineButton);
+        toolVbox.getChildren().add(squareButton);
     }
 
     private void configureComboBox() {
@@ -61,15 +66,34 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(strokeWidthComboBox);
     }
 
-    private void configureColorPicker() {
-        ColorPicker colorPicker = new ColorPicker();
-        colorPicker.setMaxWidth(Double.MAX_VALUE);
-        colorPicker.getStyleClass().add("button");
-        colorPicker.setValue(Color.BLACK);
-        colorPicker.setOnAction(colorEvent -> {
-            Color chosenColor = colorPicker.getValue();
-            stateManager.setSelectedColor(chosenColor);
+    private void configureColorPickers() {
+        ColorPicker strokeColorPicker = new ColorPicker();
+        ColorPicker fillColorPicker = new ColorPicker();
+
+        strokeColorPicker.setMaxWidth(Double.MAX_VALUE);
+        fillColorPicker.setMaxWidth(Double.MAX_VALUE);
+
+        strokeColorPicker.getStyleClass().add("button");
+        fillColorPicker.getStyleClass().add("button");
+
+        strokeColorPicker.setValue(Color.BLACK);
+        fillColorPicker.setValue(Color.BLACK);
+
+        strokeColorPicker.setOnAction(colorEvent -> {
+            Color chosenColor = strokeColorPicker.getValue();
+            stateManager.setStrokeColor(chosenColor);
         });
-        toolVbox.getChildren().add(colorPicker);
+        fillColorPicker.setOnAction(colorEvent -> {
+            Color chosenColor = fillColorPicker.getValue();
+            stateManager.setFillColor(chosenColor);
+        });
+
+        Label strokeColorLabel = new Label("Stroke Color");
+        Label fillColorLabel = new Label("Fill Color");
+
+        toolVbox.getChildren().add(strokeColorLabel);
+        toolVbox.getChildren().add(strokeColorPicker);
+        toolVbox.getChildren().add(fillColorLabel);
+        toolVbox.getChildren().add(fillColorPicker);
     }
 }
