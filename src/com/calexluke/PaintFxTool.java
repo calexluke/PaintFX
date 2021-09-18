@@ -3,6 +3,9 @@ package com.calexluke;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 // parent class for all the drawing tools.
 
 public class PaintFxTool {

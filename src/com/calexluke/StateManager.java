@@ -12,12 +12,6 @@ Keep track of user settings/preferences, and serve that info to other classes wh
 
 public class StateManager {
 
-    public enum ToolType {
-        MOUSE,
-        PENCIL,
-        LINE
-    }
-
     public enum StrokeWidth {
         THIN,
         MEDIUM,

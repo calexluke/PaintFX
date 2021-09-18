@@ -19,8 +19,6 @@ public class PaintFxCanvas extends Canvas {
 
         // initial values. These will change dynamically as user selects tools
         graphicsContext.setFill(Color.BLACK);
-        graphicsContext.fillOval(50,50,20,20);
-
         setOnClickListeners();
     }
 
@@ -76,6 +74,7 @@ public class PaintFxCanvas extends Canvas {
     }
 
     private void onMousePressed(MouseEvent e) {
+        updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onMousePressed(e, graphicsContext);
     }
