@@ -6,6 +6,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.*;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
@@ -73,8 +74,9 @@ public class Main extends Application {
         imageWidthOffset = toolBar.getWidth() + verticalScrollBar.getWidth() + (Constants.imageInsetValue);
         imageHeightOffset = menuBar.getHeight() + horizontalScrollBar.getHeight() + (Constants.imageInsetValue);
 
-        displayMainImage();
         scaleBorderPaneToSceneSize();
+        displayMainImage();
+
     }
 
     public static void main(String[] args) {
@@ -263,14 +265,20 @@ public class Main extends Application {
             while (stackPane.getChildren().size() > 0) {
                 stackPane.getChildren().remove(0);
             }
-
-            stackPane.getChildren().add(mainImageView);
             stackPane.getChildren().add(mainCanvas);
 
             scaleMainImageToSceneSize();
+            displayMainImageOnCanvas();
+
         } else {
             System.out.println("Unable to display main image - mainImage.image is null!");
         }
+    }
+
+    private void displayMainImageOnCanvas() {
+        Image image = mainImageView.getImage();
+        mainCanvas.clearGraphicsContext();
+        mainCanvas.getGraphicsContext2D().drawImage(image, 0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
     }
 
     //endregion
@@ -287,6 +295,7 @@ public class Main extends Application {
         mainImageView.setFitHeight(newHeight);
         mainImageView.setFitWidth(newWidth);
         scaleCanvasToImageSize();
+        displayMainImageOnCanvas();
 
         stackPane.setAlignment(Pos.CENTER);
         updateScrollBars();
@@ -324,9 +333,9 @@ public class Main extends Application {
         borderPane.setMaxWidth(scene.getWidth());
         borderPane.setMaxHeight(scene.getHeight());
 
-        if (mainImageView != null) {
-            scaleMainImageToSceneSize();
-        }
+//        if (mainImageView != null) {
+//            scaleMainImageToSceneSize();
+//        }
         updateScrollBars();
     }
 

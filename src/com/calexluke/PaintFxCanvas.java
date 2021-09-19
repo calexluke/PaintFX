@@ -2,6 +2,7 @@ package com.calexluke;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -20,6 +21,11 @@ public class PaintFxCanvas extends Canvas {
         // initial values. These will change dynamically as user selects tools
         graphicsContext.setFill(Color.BLACK);
         setOnClickListeners();
+    }
+
+
+    public boolean isResizable() {
+        return true;
     }
 
     private void setOnClickListeners() {

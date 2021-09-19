@@ -19,6 +19,7 @@ public class StateManager {
     }
 
     private Image mainImage;
+    private PaintFxCanvas mainCanvas;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
     private Color strokeColor;
@@ -47,6 +48,9 @@ public class StateManager {
     public void setMainImage(Image image) {
         mainImage = image;
     }
+    public void setMainCanvas(PaintFxCanvas canvas) {
+        this.mainCanvas = canvas;
+    }
 
     public void setSelectedTool(PaintFxTool tool) {
         if (selectedTool instanceof TextTool) {
@@ -74,6 +78,9 @@ public class StateManager {
 
     public Image getMainImage() {
         return mainImage;
+    }
+    public PaintFxCanvas getMainCanvas() {
+        return mainCanvas;
     }
     public PaintFxTool getSelectedTool() {
         return selectedTool;
