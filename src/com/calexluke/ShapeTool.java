@@ -4,6 +4,7 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import java.util.ArrayList;
 
 public class ShapeTool extends PaintFxTool {
 
@@ -12,10 +13,11 @@ public class ShapeTool extends PaintFxTool {
     double startY;
 
     // parameters of the shape to draw
-    double topLeftX;
-    double topLeftY;
-    double width;
-    double height;
+    double relativeTopLeftX;
+    double relativeTopLeftY;
+    double relativeWidth;
+    double relativeHeight;
+    double relativeLineWidth;
 
     public ShapeTool() {
         super();
@@ -23,23 +25,30 @@ public class ShapeTool extends PaintFxTool {
     }
 
     // store the coords where the user first clicks
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
         startX = e.getX();
         startY = e.getY();
     }
 
     // calculate the parameters used to draw rectangles, squares, ovals, circles
     // pass in co-ords from where the user released the mouse
-    protected void calculateShapeParameters(double endX, double endY) {
+    // These values are scaled by the current size of canvas, so can be re-drawn at other scales in ShapeDrawOperations
+    protected void calculateScaledShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
+        double canvasWidth = graphicsContext.getCanvas().getWidth();
+        double canvasHeight = graphicsContext.getCanvas().getHeight();
 
         // calculate where the top left corner of the shape should be
         double xDifference = endX - startX;
         double yDifference = endY - startY;
-        topLeftX = (xDifference > 0) ? startX : endX;
-        topLeftY = (yDifference > 0) ? startY : endY;
+        double x = (xDifference > 0) ? startX : endX;
+        double y = (yDifference > 0) ? startY : endY;
+        relativeTopLeftX = x / canvasWidth;
+        relativeTopLeftY = y / canvasHeight;
 
         // calculate side lengths
-        width = Math.abs(endX - startX);
-        height = Math.abs(endY - startY);
+        relativeWidth = Math.abs(endX - startX) / canvasWidth;
+        relativeHeight = Math.abs(endY - startY) / canvasHeight;
+
+        relativeLineWidth = graphicsContext.getLineWidth() / canvasWidth;
     }
 }

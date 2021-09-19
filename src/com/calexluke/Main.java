@@ -256,6 +256,7 @@ public class Main extends Application {
             // new image view, clear any drawing from canvas
             mainImageView = new ImageView(image);
             mainCanvas.clearGraphicsContext();
+            mainCanvas.clearOperationsList();
 
             mainImageView.setX(0);
             mainImageView.setY(0);

@@ -24,13 +24,20 @@ public class PaintFxCanvas extends Canvas {
         setOnClickListeners();
     }
 
+    // called when canvas is rescaled to re-generate all the drawings at the new scale.
     public void reDraw() {
-        //clearGraphicsContext();
         for (DrawOperation operation : operations) {
             operation.draw(graphicsContext);
         }
     }
 
+    public void clearOperationsList() {
+        operations.clear();
+    }
+
+    public void clearGraphicsContext() {
+        graphicsContext.clearRect(0, 0, this.getWidth(), this.getHeight());
+    }
 
     public boolean isResizable() {
         return true;
@@ -69,10 +76,6 @@ public class PaintFxCanvas extends Canvas {
         Color fillColor = stateManager.getFillColor();
         graphicsContext.setStroke(strokeColor);
         graphicsContext.setFill(fillColor);
-    }
-
-    public void clearGraphicsContext() {
-        graphicsContext.clearRect(0, 0, this.getWidth(), this.getHeight());
     }
 
     private void onMouseReleased(MouseEvent e) {

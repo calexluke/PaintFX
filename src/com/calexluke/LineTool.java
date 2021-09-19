@@ -14,6 +14,10 @@ public class LineTool extends PaintFxTool {
     double startX;
     double startY;
 
+    double relativeX;
+    double relativeY;
+    double relativeLineWidth;
+
     public LineTool() {
         super();
         makesChangesToCanvas = true;
@@ -26,17 +30,21 @@ public class LineTool extends PaintFxTool {
     }
 
     public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
-        createLineOperation(e, graphicsContext, operations);
+        calculateScaledLineParameters(e, graphicsContext);
+        createLineOperation(graphicsContext, operations);
     }
 
-    protected void createLineOperation(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    protected void calculateScaledLineParameters(MouseEvent e, GraphicsContext graphicsContext) {
         double canvasWidth = graphicsContext.getCanvas().getWidth();
         double canvasHeight = graphicsContext.getCanvas().getHeight();
 
         // get the x/y co-ords and line width scaled to the dimensions of canvas
-        double relativeX = e.getX() / canvasWidth;
-        double relativeY = e.getY() / canvasHeight;
-        double relativeLineWidth = graphicsContext.getLineWidth() / canvasWidth;
+        relativeX = e.getX() / canvasWidth;
+        relativeY = e.getY() / canvasHeight;
+        relativeLineWidth = graphicsContext.getLineWidth() / canvasWidth;
+    }
+
+    protected void createLineOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
         Paint color = graphicsContext.getStroke();
 
         // add operation to array for undo/redo and scaling

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class PencilTool extends LineTool {
 
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
-        createLineOperation(e, graphicsContext, operations);
+        calculateScaledLineParameters(e, graphicsContext);
+        createLineOperation(graphicsContext, operations);
     }
 }
 

@@ -1,14 +1,23 @@
 package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
 
-public class SquareTool extends ShapeTool {
+import java.util.ArrayList;
 
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateShapeParameters(e.getX(), e.getY());
-        double sideLength = Math.max(width, height);
-        graphicsContext.fillRect(topLeftX, topLeftY, sideLength, sideLength);
-        graphicsContext.strokeRect(topLeftX, topLeftY, sideLength, sideLength);
+public class SquareTool extends RectTool {
+
+    protected void createRectOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+        Paint strokeColor = graphicsContext.getStroke();
+        Paint fillColor = graphicsContext.getFill();
+
+        // make side lengths equal whichever is longer
+        double sideLength = Math.max(relativeWidth, relativeHeight);
+
+        // add operation to array for undo/redo and scaling
+        RectDrawOperation squareOp = new RectDrawOperation(relativeTopLeftX, relativeTopLeftY, sideLength, sideLength,
+                relativeLineWidth, strokeColor, fillColor);
+        squareOp.draw(graphicsContext);
+        operations.add(squareOp);
     }
 }

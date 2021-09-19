@@ -1,13 +1,23 @@
 package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
 
-public class CircleTool extends  ShapeTool {
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateShapeParameters(e.getX(), e.getY());
-        double sideLength = Math.max(width, height);
-        graphicsContext.fillOval(topLeftX, topLeftY, sideLength, sideLength);
-        graphicsContext.strokeOval(topLeftX, topLeftY, sideLength, sideLength);
+import java.util.ArrayList;
+
+public class CircleTool extends OvalTool {
+
+    protected void createOvalOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+        Paint strokeColor = graphicsContext.getStroke();
+        Paint fillColor = graphicsContext.getFill();
+
+        // make diameter equal wto whichever dimension is longer
+        double diameter = Math.max(relativeWidth, relativeHeight);
+
+        // add operation to array for undo/redo and scaling
+        OvalDrawOperation circleOp = new OvalDrawOperation(relativeTopLeftX, relativeTopLeftY, diameter, diameter,
+                relativeLineWidth, strokeColor, fillColor);
+        circleOp.draw(graphicsContext);
+        operations.add(circleOp);
     }
 }
