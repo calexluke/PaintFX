@@ -190,6 +190,8 @@ public class Main extends Application {
         MenuItem autoScale = new MenuItem("Auto-Scale Image");
 
         autoScale.setOnAction(e -> scaleMainImageToSceneSize());
+        zoomIn.setOnAction(e -> zoom(1.1));
+        zoomOut.setOnAction(e -> zoom(0.9));
         viewMenu.getItems().add(zoomIn);
         viewMenu.getItems().add(zoomOut);
         viewMenu.getItems().add(autoScale);
@@ -287,8 +289,13 @@ public class Main extends Application {
         scaleCanvasToImageSize();
 
         stackPane.setAlignment(Pos.CENTER);
-        stackPane.setTranslateX(0);
-        stackPane.setTranslateY(0);
+        updateScrollBars();
+    }
+
+    private void zoom(double factor) {
+        double currentWidth = mainImageView.getFitWidth();
+        double currentHeight = mainImageView.getFitHeight();
+        scaleMainImage(currentWidth * factor, currentHeight * factor);
     }
 
     private void scaleCanvasToImageSize() {
@@ -317,6 +324,9 @@ public class Main extends Application {
         borderPane.setMaxWidth(scene.getWidth());
         borderPane.setMaxHeight(scene.getHeight());
 
+        if (mainImageView != null) {
+            scaleMainImageToSceneSize();
+        }
         updateScrollBars();
     }
 
