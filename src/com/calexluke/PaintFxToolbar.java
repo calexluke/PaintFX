@@ -11,6 +11,8 @@ public class PaintFxToolbar extends ToolBar {
 
     private StateManager stateManager;
     private VBox toolVbox;
+    private ColorPicker strokeColorPicker;
+    private ColorPicker fillColorPicker;
 
     public PaintFxToolbar(StateManager stateManager) {
         super();
@@ -35,6 +37,7 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton rectButton = new ToggleButton("Rectangle");
         ToggleButton circleButton = new ToggleButton("Circle");
         ToggleButton ovalButton = new ToggleButton("Oval");
+        ToggleButton colorGrabButton = new ToggleButton("Grab Color");
 
         // all buttons will be the width of the VBox
         mouseButton.setMaxWidth(Double.MAX_VALUE);
@@ -44,6 +47,7 @@ public class PaintFxToolbar extends ToolBar {
         rectButton.setMaxWidth(Double.MAX_VALUE);
         circleButton.setMaxWidth(Double.MAX_VALUE);
         ovalButton.setMaxWidth(Double.MAX_VALUE);
+        colorGrabButton.setMaxWidth(Double.MAX_VALUE);
 
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
@@ -52,6 +56,7 @@ public class PaintFxToolbar extends ToolBar {
         rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
         circleButton.setOnAction(e -> stateManager.setSelectedTool(new CircleTool()));
         ovalButton.setOnAction(e -> stateManager.setSelectedTool(new OvalTool()));
+        colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
 
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
@@ -60,6 +65,7 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(rectButton);
         toggleGroup.getToggles().add(circleButton);
         toggleGroup.getToggles().add(ovalButton);
+        toggleGroup.getToggles().add(colorGrabButton);
 
         toolVbox.getChildren().add(mouseButton);
         toolVbox.getChildren().add(pencilButton);
@@ -68,6 +74,7 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(rectButton);
         toolVbox.getChildren().add(circleButton);
         toolVbox.getChildren().add(ovalButton);
+        toolVbox.getChildren().add(colorGrabButton);
     }
 
     private void configureComboBox() {
@@ -86,8 +93,8 @@ public class PaintFxToolbar extends ToolBar {
     }
 
     private void configureColorPickers() {
-        ColorPicker strokeColorPicker = new ColorPicker();
-        ColorPicker fillColorPicker = new ColorPicker();
+        strokeColorPicker = new ColorPicker();
+        fillColorPicker = new ColorPicker();
 
         strokeColorPicker.setMaxWidth(Double.MAX_VALUE);
         fillColorPicker.setMaxWidth(Double.MAX_VALUE);
