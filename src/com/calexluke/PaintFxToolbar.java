@@ -37,6 +37,7 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton rectButton = new ToggleButton("Rectangle");
         ToggleButton circleButton = new ToggleButton("Circle");
         ToggleButton ovalButton = new ToggleButton("Oval");
+        ToggleButton textButton = new ToggleButton("Text");
         ToggleButton colorGrabButton = new ToggleButton("Grab Color");
 
         // all buttons will be the width of the VBox
@@ -48,6 +49,7 @@ public class PaintFxToolbar extends ToolBar {
         circleButton.setMaxWidth(Double.MAX_VALUE);
         ovalButton.setMaxWidth(Double.MAX_VALUE);
         colorGrabButton.setMaxWidth(Double.MAX_VALUE);
+        textButton.setMaxWidth(Double.MAX_VALUE);
 
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
@@ -56,6 +58,7 @@ public class PaintFxToolbar extends ToolBar {
         rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
         circleButton.setOnAction(e -> stateManager.setSelectedTool(new CircleTool()));
         ovalButton.setOnAction(e -> stateManager.setSelectedTool(new OvalTool()));
+        textButton.setOnAction(e -> stateManager.setSelectedTool(new TextTool()));
         colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
 
         toggleGroup.getToggles().add(mouseButton);
@@ -65,6 +68,7 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(rectButton);
         toggleGroup.getToggles().add(circleButton);
         toggleGroup.getToggles().add(ovalButton);
+        toggleGroup.getToggles().add(textButton);
         toggleGroup.getToggles().add(colorGrabButton);
 
         toolVbox.getChildren().add(mouseButton);
@@ -74,6 +78,7 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(rectButton);
         toolVbox.getChildren().add(circleButton);
         toolVbox.getChildren().add(ovalButton);
+        toolVbox.getChildren().add(textButton);
         toolVbox.getChildren().add(colorGrabButton);
     }
 

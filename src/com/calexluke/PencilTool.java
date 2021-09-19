@@ -7,19 +7,25 @@ import javafx.scene.input.MouseEvent;
 
 public class PencilTool extends PaintFxTool {
 
+    public PencilTool() {
+        super();
+        makesChangesToCanvas = true;
+    }
+
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
-        graphicsContext.beginPath();
         graphicsContext.moveTo(e.getX(), e.getY());
+        graphicsContext.beginPath();
     }
 
     public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        graphicsContext.closePath();
+        graphicsContext.stroke();
     }
 
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         graphicsContext.lineTo(e.getX(), e.getY());
         graphicsContext.stroke();
     }
+
 }
 
 

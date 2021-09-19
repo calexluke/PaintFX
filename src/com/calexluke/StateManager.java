@@ -47,7 +47,11 @@ public class StateManager {
     public void setMainImage(Image image) {
         mainImage = image;
     }
+
     public void setSelectedTool(PaintFxTool tool) {
+        if (selectedTool instanceof TextTool) {
+            ((TextTool) selectedTool).removeTextFieldsFromPane();
+        }
         selectedTool = tool;
     }
     public void setStrokeColor(Color color) {

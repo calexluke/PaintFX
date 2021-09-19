@@ -65,20 +65,26 @@ public class PaintFxCanvas extends Canvas {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onMouseReleased(e, graphicsContext);
-        stateManager.setHasUnsavedChanges(true);
+        if (tool.makesChangesToCanvas) {
+            stateManager.setHasUnsavedChanges(true);
+        }
     }
 
     private void onDrag(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onDrag(e, graphicsContext);
-        stateManager.setHasUnsavedChanges(true);
+        if (tool.makesChangesToCanvas) {
+            stateManager.setHasUnsavedChanges(true);
+        }
     }
 
     private void onMousePressed(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onMousePressed(e, graphicsContext);
-        stateManager.setHasUnsavedChanges(true);
+        if (tool.makesChangesToCanvas) {
+            stateManager.setHasUnsavedChanges(true);
+        }
     }
 }

@@ -2,10 +2,16 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.LineTo;
 
 // tool for drawing a straight line on  the canvas
 
 public class LineTool extends PaintFxTool {
+
+    public LineTool() {
+        super();
+        makesChangesToCanvas = true;
+    }
 
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         graphicsContext.beginPath();

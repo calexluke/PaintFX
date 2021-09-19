@@ -17,6 +17,11 @@ public class ShapeTool extends PaintFxTool {
     double width;
     double height;
 
+    public ShapeTool() {
+        super();
+        makesChangesToCanvas = true;
+    }
+
     // store the coords where the user first clicks
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         startX = e.getX();

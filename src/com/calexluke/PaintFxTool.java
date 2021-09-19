@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class PaintFxTool {
 
+    // used to keep track of unsaved changes. Some tools will override this
+    Boolean makesChangesToCanvas = false;
+
     // Individual tool subclasses will override the onClick methods.
     // Default implementation is to do nothing on click
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) { }
