@@ -13,6 +13,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.util.Optional;
+
 
 public class Main extends Application {
 
@@ -81,7 +83,27 @@ public class Main extends Application {
 
     private void quitApplication() {
         // handle more shutdown stuff here
-        System.exit(0);
+
+        if (stateManager.getHasUnsavedChanges()) {
+            displaySmartSaveAlert();
+        } else {
+            System.exit(0);
+        }
+    }
+
+    private void displaySmartSaveAlert() {
+        ButtonType save = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
+        ButtonType quit = new ButtonType("Exit Without Saving", ButtonBar.ButtonData.OK_DONE);
+        Alert alert = new Alert(Alert.AlertType.WARNING, "You have unsaved changes!", save, quit);
+        alert.setTitle("Unsaved changes!");
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == save) {
+            fileManager.saveImage(imageManager.getSnapshotImageToSave(stackPane));
+            System.exit(0);
+        } else if (result.get() == quit) {
+            System.exit(0);
+        }
     }
 
     //endregion

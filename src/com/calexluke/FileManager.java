@@ -94,6 +94,7 @@ public class FileManager {
                 BufferedImage convertedImage = imageManager.getBufferedImageForJPG(image);
                 ImageIO.write(convertedImage, "jpg", outFile);
             }
+            stateManager.setHasUnsavedChanges(false);
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

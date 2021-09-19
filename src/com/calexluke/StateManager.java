@@ -24,6 +24,7 @@ public class StateManager {
     private Color strokeColor;
     private Color fillColor;
     private String saveAsFilePath;
+    private Boolean hasUnsavedChanges;
 
     // will be used to handle undo operations
     private Image currentImage;
@@ -36,6 +37,7 @@ public class StateManager {
         selectedStrokeWidth = StrokeWidth.THIN;
         strokeColor = Color.BLACK;
         fillColor = Color.BLACK;
+        hasUnsavedChanges = false;
         saveAsFilePath = null;
         mainImage = imageManager.getLogoImage();
     }
@@ -60,6 +62,9 @@ public class StateManager {
     public void setSaveAsFilePath(String filePath) {
         saveAsFilePath = filePath;
     }
+    public void setHasUnsavedChanges(Boolean hasChanges) {
+        hasUnsavedChanges = hasChanges;
+    }
 
     // getters
 
@@ -80,6 +85,9 @@ public class StateManager {
     }
     public String getSaveAsFilePath() {
         return saveAsFilePath;
+    }
+    public Boolean getHasUnsavedChanges() {
+        return hasUnsavedChanges;
     }
 
     // the following is not currently used! For use in future undo feature
