@@ -2,9 +2,9 @@ package com.calexluke;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import java.util.ArrayList;
 
 // class for handling drawing and other canvas-related things
 
@@ -12,6 +12,7 @@ public class PaintFxCanvas extends Canvas {
 
     private GraphicsContext graphicsContext;
     private StateManager stateManager;
+    private ArrayList<DrawOperation> operations = new ArrayList<>();
 
     public PaintFxCanvas(double initialWidth, double initialHeight, StateManager stateManager) {
         super(initialWidth, initialHeight);
@@ -21,6 +22,13 @@ public class PaintFxCanvas extends Canvas {
         // initial values. These will change dynamically as user selects tools
         graphicsContext.setFill(Color.BLACK);
         setOnClickListeners();
+    }
+
+    public void reDraw() {
+        //clearGraphicsContext();
+        for (DrawOperation operation : operations) {
+            operation.draw(graphicsContext);
+        }
     }
 
 
@@ -70,7 +78,7 @@ public class PaintFxCanvas extends Canvas {
     private void onMouseReleased(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onMouseReleased(e, graphicsContext);
+        tool.onMouseReleased(e, graphicsContext, operations);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }
@@ -79,7 +87,7 @@ public class PaintFxCanvas extends Canvas {
     private void onDrag(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onDrag(e, graphicsContext);
+        tool.onDrag(e, graphicsContext, operations);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }
@@ -88,7 +96,7 @@ public class PaintFxCanvas extends Canvas {
     private void onMousePressed(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onMousePressed(e, graphicsContext);
+        tool.onMousePressed(e, graphicsContext, operations);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }

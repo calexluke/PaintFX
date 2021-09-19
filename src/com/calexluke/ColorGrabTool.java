@@ -8,6 +8,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class ColorGrabTool extends PaintFxTool {
 
     ColorPicker colorPicker;
@@ -20,7 +22,7 @@ public class ColorGrabTool extends PaintFxTool {
     }
 
     @Override
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
         // take a snapshot of the canvas/image stackpane
         Canvas canvas = graphicsContext.getCanvas();
         WritableImage snap = canvas.getParent().snapshot(null, null);

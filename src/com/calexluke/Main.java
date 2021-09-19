@@ -296,6 +296,7 @@ public class Main extends Application {
         mainImageView.setFitWidth(newWidth);
         scaleCanvasToImageSize();
         displayMainImageOnCanvas();
+        mainCanvas.reDraw();
 
         stackPane.setAlignment(Pos.CENTER);
         updateScrollBars();
@@ -333,9 +334,9 @@ public class Main extends Application {
         borderPane.setMaxWidth(scene.getWidth());
         borderPane.setMaxHeight(scene.getHeight());
 
-//        if (mainImageView != null) {
-//            scaleMainImageToSceneSize();
-//        }
+        if (mainImageView != null) {
+            scaleMainImageToSceneSize();
+        }
         updateScrollBars();
     }
 

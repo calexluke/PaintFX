@@ -2,30 +2,19 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+
+import java.util.ArrayList;
 
 // tool for freehand drawing on canvas
+// creates line on drag instead of on release
 
-public class PencilTool extends PaintFxTool {
+public class PencilTool extends LineTool {
 
-    public PencilTool() {
-        super();
-        makesChangesToCanvas = true;
+    public void onDrag(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+        createLineOperation(e, graphicsContext, operations);
     }
-
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
-        graphicsContext.moveTo(e.getX(), e.getY());
-        graphicsContext.beginPath();
-    }
-
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        graphicsContext.stroke();
-    }
-
-    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
-        graphicsContext.lineTo(e.getX(), e.getY());
-        graphicsContext.stroke();
-    }
-
 }
 
 
