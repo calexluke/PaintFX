@@ -6,6 +6,7 @@ public class Constants {
     static public int defaultSceneHeight = 1000;
     static public int defaultSceneWidth = 1000;
     static public int imageInsetValue = 40;
+    static public int DEFAULT_FONT_SIZE = 20;
 
     static public String SHAPE_KEY_X = "xValue";
     static public String SHAPE_KEY_Y = "yValue";

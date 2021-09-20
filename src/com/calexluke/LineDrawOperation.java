@@ -18,7 +18,7 @@ public class LineDrawOperation implements DrawOperation {
     double scaledEndY;
     double scaledLineWidth;
 
-    public  LineDrawOperation(double startX, double startY, double endX, double endY, Paint strokeColor, double lineWidth) {
+    public LineDrawOperation(double startX, double startY, double endX, double endY, Paint strokeColor, double lineWidth) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;

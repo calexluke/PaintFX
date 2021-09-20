@@ -74,7 +74,6 @@ public class Main extends Application {
 
         scaleBorderPaneToSceneSize();
         displayMainImage();
-
     }
 
     public static void main(String[] args) {
@@ -99,7 +98,7 @@ public class Main extends Application {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.get() == save) {
-            fileManager.saveImage(imageManager.getSnapshotImageToSave(stackPane));
+            fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas));
             System.exit(0);
         } else if (result.get() == quit) {
             System.exit(0);
@@ -171,9 +170,9 @@ public class Main extends Application {
 
         load.setOnAction(e -> selectNewImage());
         restore.setOnAction(e -> displayDefaultLogoImage());
-        // take snapshot of canvas/image stack, send to fileManager to save
-        saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(stackPane)));
-        save.setOnAction(e -> fileManager.saveImage(imageManager.getSnapshotImageToSave(stackPane)));
+        // take snapshot of canvas, send to fileManager to save
+        saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(mainCanvas)));
+        save.setOnAction(e -> fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas)));
 
         imageMenu.getItems().add(restore);
         imageMenu.getItems().add(save);
@@ -246,7 +245,8 @@ public class Main extends Application {
         displayMainImage();
     }
 
-    // re-initialize mainIMageView and repopulate stackpane with imageview and canvas
+    // re-initialize mainImageView and repopulate stackpane with imageview and canvas
+    // using imageView to handle aspect ratio stuff
     private void displayMainImage() {
         Image image = stateManager.getMainImage();
 
@@ -260,24 +260,17 @@ public class Main extends Application {
             mainImageView.setY(0);
             mainImageView.setPreserveRatio(true);
 
-            // clear stackpane - otherwise the prior imageview will remain
-            while (stackPane.getChildren().size() > 0) {
-                stackPane.getChildren().remove(0);
-            }
-            stackPane.getChildren().add(mainCanvas);
-
             scaleMainImageToSceneSize();
             displayMainImageOnCanvas();
-
         } else {
             System.out.println("Unable to display main image - mainImage.image is null!");
         }
     }
 
     private void displayMainImageOnCanvas() {
-        Image image = mainImageView.getImage();
+        Image mainImage = stateManager.getMainImage();
         mainCanvas.clearGraphicsContext();
-        mainCanvas.getGraphicsContext2D().drawImage(image, 0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
+        mainCanvas.getGraphicsContext2D().drawImage(mainImage, 0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
     }
 
     //endregion
@@ -293,6 +286,8 @@ public class Main extends Application {
     private void scaleMainImage(double newWidth, double newHeight) {
         mainImageView.setFitHeight(newHeight);
         mainImageView.setFitWidth(newWidth);
+
+        // use the imageView aspect fit properties to determine cavas size
         scaleCanvasToImageSize();
         displayMainImageOnCanvas();
         mainCanvas.reDraw();

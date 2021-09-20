@@ -23,16 +23,11 @@ public class ColorGrabTool extends PaintFxTool {
 
     @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
-        // take a snapshot of the canvas/image stackpane
+        // take a snapshot of the canvas
         Canvas canvas = graphicsContext.getCanvas();
-        WritableImage snap = canvas.getParent().snapshot(null, null);
-        // translate the x/y coords of the mouse event on the canvas to coords on the stackpane
-        Point2D localPoint = canvas.localToParent(e.getX(), e.getY());
-        int x = (int)localPoint.getX();
-        int y = (int)localPoint.getY();
-
+        WritableImage snap = canvas.snapshot(null, null);
         // read color of pixel at coords
-        Color color = snap.getPixelReader().getColor(x, y); //This just gets the color without assigning it.
+        Color color = snap.getPixelReader().getColor((int)e.getX(), (int)e.getY()); //This just gets the color without assigning it.
         colorPicker.setValue(color);
         stateManager.setStrokeColor(color);
     }

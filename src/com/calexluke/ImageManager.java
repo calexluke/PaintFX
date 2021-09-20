@@ -40,11 +40,11 @@ public class ImageManager {
     }
 
     // take snapshot of canvas/image 'stack' to save
-    public WritableImage getSnapshotImageToSave(Node node) {
+    public WritableImage getSnapshotImageToSave(PaintFxCanvas canvas) {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
         //Take snapshot of the scene
-        WritableImage writableImage = node.snapshot(params, null);
+        WritableImage writableImage = canvas.snapshot(params, null);
         return  writableImage;
     }
 
