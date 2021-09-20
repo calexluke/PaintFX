@@ -9,6 +9,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -32,6 +33,8 @@ public class Main extends Application {
     private PaintFxScrollBar verticalScrollBar;
     private ToolBar toolBar;
     private MenuBar menuBar;
+
+    private Boolean commandIsDown = false;
 
     // default values, approximations of widths of border elements. These are reset dynamically after init
     private Double imageWidthOffset = 178.0;
@@ -58,6 +61,7 @@ public class Main extends Application {
         configureToolBar();
         configureCanvas();
         configureScrollBars();
+        configureKeyboardListeners();
 
         // add listener to track changes in scene size
         ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleBorderPaneToSceneSize();
@@ -132,13 +136,8 @@ public class Main extends Application {
 
         // listeners for scrollbar value change
         // translate image in x or y direction based on scrollbar value
-        ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> {
-            stackPane.setTranslateX(-newVal.doubleValue());
-        };
-
-        ChangeListener<Number> verticalValueChangeListener = (ov, oldVal, newVal) -> {
-            stackPane.setTranslateY(-newVal.doubleValue());
-        };
+        ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> stackPane.setTranslateX(-newVal.doubleValue());
+        ChangeListener<Number> verticalValueChangeListener = (ov, oldVal, newVal) -> stackPane.setTranslateY(-newVal.doubleValue());
 
         horizontalScrollBar.valueProperty().addListener(horizontalValueChangeListener);
         verticalScrollBar.valueProperty().addListener(verticalValueChangeListener);
@@ -222,6 +221,26 @@ public class Main extends Application {
         menuBar.getMenus().add(helpMenu);
     }
 
+    private void configureKeyboardListeners() {
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.COMMAND) {
+                commandIsDown = true;
+                System.out.println("Command down");
+            }
+            if (e.getCode() == KeyCode.S && commandIsDown) { fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas)); }
+            if (e.getCode() == KeyCode.EQUALS && commandIsDown) { zoom(1.1);}
+            if (e.getCode() == KeyCode.MINUS && commandIsDown) { zoom(0.9);}
+            if (e.getCode() == KeyCode.Q && commandIsDown) { quitApplication(); }
+        });
+
+        scene.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.COMMAND) {
+                commandIsDown = false;
+                System.out.println("Command up");
+            }
+        });
+    }
+
     //endregion
 
     //region Image Selection and Display
@@ -299,7 +318,14 @@ public class Main extends Application {
     private void zoom(double factor) {
         double currentWidth = mainImageView.getFitWidth();
         double currentHeight = mainImageView.getFitHeight();
-        scaleMainImage(currentWidth * factor, currentHeight * factor);
+
+        // need a boundary, otherwise the app can crash if zoomed in too far. The 3 is just a ballpark number that seems to work.
+        boolean zoomedInTooFar = (currentWidth >= 3 * scene.getWidth()) || (currentHeight >= 3 * scene.getHeight());
+
+        if (!zoomedInTooFar || factor < 1) {
+            // if too far zoomed in, can still zoom back out
+            scaleMainImage(currentWidth * factor, currentHeight * factor);
+        }
     }
 
     private void scaleCanvasToImageSize() {
@@ -356,12 +382,12 @@ public class Main extends Application {
         double imageRightX = imageBoundsInScene.getMaxX();
 
         // Y values where the edges of the image should be if the image is in frame
-        double verticalMin = menuBar.getHeight() + (Constants.imageInsetValue / 2);
-        double verticalMax = scene.getHeight() - horizontalScrollBar.getHeight() - (Constants.imageInsetValue / 2);
+        double verticalMin = menuBar.getHeight() + (Constants.imageInsetValue / 2.0);
+        double verticalMax = scene.getHeight() - horizontalScrollBar.getHeight() - (Constants.imageInsetValue / 2.0);
 
         // x values where the edges of the image should be if the image is in frame
-        double horizontalMin = toolBar.getWidth() + (Constants.imageInsetValue / 2);
-        double horizontalMax = scene.getWidth() - verticalScrollBar.getWidth() - (Constants.imageInsetValue / 2);
+        double horizontalMin = toolBar.getWidth() + (Constants.imageInsetValue / 2.0);
+        double horizontalMax = scene.getWidth() - verticalScrollBar.getWidth() - (Constants.imageInsetValue / 2.0);
 
         horizontalScrollBar.updateScrollBarBounds(imageLeftX, imageRightX, horizontalMin, horizontalMax);
         verticalScrollBar.updateScrollBarBounds(imageTopY, imageBottomY, verticalMin, verticalMax);
