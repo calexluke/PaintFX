@@ -16,6 +16,9 @@ public class PaintFxCanvas extends Canvas {
     private GraphicsContext graphicsContext;
     private StateManager stateManager;
     private ImageView imageView;
+
+    // This array stores each "operation"/drawing event done on the canvas. This can be used for undo/redo, as well as redrawing
+    // the canvas at a new scale after zoom in/zoom out
     private ArrayList<DrawOperation> operations = new ArrayList<>();
 
     public PaintFxCanvas(double initialWidth, double initialHeight, StateManager stateManager) {
@@ -31,10 +34,14 @@ public class PaintFxCanvas extends Canvas {
     public ImageView getImageView() {
         return imageView;
     }
-
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
     }
+    public boolean isResizable() {
+        return true;
+    }
+
+    //region Drawing
 
     // called when canvas is rescaled to re-generate all the drawings at the new scale.
     public void reDraw() {
@@ -50,28 +57,18 @@ public class PaintFxCanvas extends Canvas {
         graphicsContext.drawImage(image, 0, 0, this.getWidth(), this.getHeight());
     }
 
+    // called when user wants to draw a graphic - ensure color and stroke width are up to date with user preferences
+    public void updateGraphicsContext() {
+        updateStrokeWidth();
+        updateColors();
+    }
+
     public void clearOperationsList() {
         operations.clear();
     }
 
     public void clearGraphicsContext() {
         graphicsContext.clearRect(0, 0, this.getWidth(), this.getHeight());
-    }
-
-    public boolean isResizable() {
-        return true;
-    }
-
-    private void setOnClickListeners() {
-        this.setOnMouseDragged(this::onDrag);
-        this.setOnMousePressed(this::onMousePressed);
-        this.setOnMouseReleased(this::onMouseReleased);
-    }
-
-    // called when user wants to draw a graphic - ensure color and stroke width are up to date with user preferences
-    public void updateGraphicsContext() {
-        updateStrokeWidth();
-        updateColors();
     }
 
     private void updateStrokeWidth() {
@@ -95,6 +92,16 @@ public class PaintFxCanvas extends Canvas {
         Color fillColor = stateManager.getFillColor();
         graphicsContext.setStroke(strokeColor);
         graphicsContext.setFill(fillColor);
+    }
+
+    //endregion
+
+    //region OnClick
+
+    private void setOnClickListeners() {
+        this.setOnMouseDragged(this::onDrag);
+        this.setOnMousePressed(this::onMousePressed);
+        this.setOnMouseReleased(this::onMouseReleased);
     }
 
     private void onMouseReleased(MouseEvent e) {
@@ -124,18 +131,18 @@ public class PaintFxCanvas extends Canvas {
         }
     }
 
+    //endregion
+
     //region Image size and scale
+
     public void scaleImage(double newWidth, double newHeight) {
         imageView.setFitHeight(newHeight);
         imageView.setFitWidth(newWidth);
 
-        // use the imageView aspect fit properties to determine cavas size
+        // use the imageView aspect fit properties to determine canvas size
         scaleCanvasToImageSize();
         drawImageOnCanvas();
         reDraw();
-
-        //this.getParent().setAlignment(Pos.CENTER);
-
     }
 
     private void scaleCanvasToImageSize() {

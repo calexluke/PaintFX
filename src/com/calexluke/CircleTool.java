@@ -11,11 +11,11 @@ public class CircleTool extends OvalTool {
         Paint strokeColor = graphicsContext.getStroke();
         Paint fillColor = graphicsContext.getFill();
 
-        // make diameter equal wto whichever dimension is longer
+        // make diameter equal to whichever dimension is longer
         double diameter = Math.max(relativeWidth, relativeHeight);
 
         // add operation to array for undo/redo and scaling
-        OvalDrawOperation circleOp = new OvalDrawOperation(relativeTopLeftX, relativeTopLeftY, diameter, diameter,
+        CircleDrawOperation circleOp = new CircleDrawOperation(relativeTopLeftX, relativeTopLeftY, diameter, diameter,
                 relativeLineWidth, strokeColor, fillColor);
         circleOp.draw(graphicsContext);
         operations.add(circleOp);

@@ -5,13 +5,15 @@ import javafx.scene.paint.Paint;
 
 public class LineDrawOperation implements DrawOperation {
 
-    double startX;
-    double startY;
-    double endX;
-    double endY;
+    // parameters as a proportion of canvas size
+    double relativeStartX;
+    double relativeStartY;
+    double relativeEndX;
+    double relativeEndY;
+    double relativeLineWidth;
     Paint strokeColor;
-    double lineWidth;
 
+    // parameters scaled to actual coordinates based on the current canvas size
     double scaledStartX;
     double scaledStartY;
     double scaledEndX;
@@ -19,12 +21,12 @@ public class LineDrawOperation implements DrawOperation {
     double scaledLineWidth;
 
     public LineDrawOperation(double startX, double startY, double endX, double endY, Paint strokeColor, double lineWidth) {
-        this.startX = startX;
-        this.startY = startY;
-        this.endX = endX;
-        this.endY = endY;
+        this.relativeStartX = startX;
+        this.relativeStartY = startY;
+        this.relativeEndX = endX;
+        this.relativeEndY = endY;
         this.strokeColor = strokeColor;
-        this.lineWidth = lineWidth;
+        this.relativeLineWidth = lineWidth;
     }
 
     public void draw(GraphicsContext graphicsContext) {
@@ -43,10 +45,10 @@ public class LineDrawOperation implements DrawOperation {
         double height = graphicsContext.getCanvas().getHeight();
 
         // get absolute co-ords by multiplying by current dimensions
-        scaledStartX = startX * width;
-        scaledStartY = startY * height;
-        scaledEndX = endX * width;
-        scaledEndY = endY * height;
-        scaledLineWidth = lineWidth * width;
+        scaledStartX = relativeStartX * width;
+        scaledStartY = relativeStartY * height;
+        scaledEndX = relativeEndX * width;
+        scaledEndY = relativeEndY * height;
+        scaledLineWidth = relativeLineWidth * width;
     }
 }

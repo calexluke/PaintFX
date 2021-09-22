@@ -15,7 +15,7 @@ public class SquareTool extends RectTool {
         double sideLength = Math.max(relativeWidth, relativeHeight);
 
         // add operation to array for undo/redo and scaling
-        RectDrawOperation squareOp = new RectDrawOperation(relativeTopLeftX, relativeTopLeftY, sideLength, sideLength,
+        SquareDrawOperation squareOp = new SquareDrawOperation(relativeTopLeftX, relativeTopLeftY, sideLength, sideLength,
                 relativeLineWidth, strokeColor, fillColor);
         squareOp.draw(graphicsContext);
         operations.add(squareOp);
