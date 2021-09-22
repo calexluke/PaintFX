@@ -21,7 +21,6 @@ public class StateManager {
     }
 
     private ArrayList<Image> imageArray;
-    private ArrayList<PaintFxCanvas> canvasArray;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
     private Color strokeColor;
@@ -29,11 +28,6 @@ public class StateManager {
     private Boolean hasUnsavedChanges;
     private int selectedTabIndex;
     private HashMap<Integer, String> saveAsFilePathMap;
-
-    // will be used to handle undo operations
-    private Image currentImage;
-    private ArrayList<Image> undoArray;
-    private int undoIndex = 0;
 
     public StateManager() {
         ImageManager imageManager = new ImageManager();
@@ -46,8 +40,6 @@ public class StateManager {
         selectedTabIndex = 0;
 
         imageArray = new ArrayList<>();
-        canvasArray = new ArrayList<>();
-
         imageArray.add(selectedTabIndex, imageManager.getLogoImage());
     }
 
@@ -56,7 +48,6 @@ public class StateManager {
     public void setMainImageInCurrentTab(Image image) {
         imageArray.add(selectedTabIndex, image);
     }
-
     public void setSelectedTool(PaintFxTool tool) {
         if (selectedTool instanceof TextTool) {
             ((TextTool) selectedTool).removeTextFieldsFromPane();
@@ -87,9 +78,6 @@ public class StateManager {
     public Image getImageFromCurrentTab() {
         return imageArray.get(selectedTabIndex);
     }
-    public PaintFxCanvas getCanvasFromCurrentTab() {
-        return canvasArray.get(selectedTabIndex);
-    }
     public PaintFxTool getSelectedTool() {
         return selectedTool;
     }
@@ -109,16 +97,4 @@ public class StateManager {
         return hasUnsavedChanges;
     }
     public int getSelectedTabIndex() { return  selectedTabIndex; }
-
-
-    // the following is not currently used! For use in future undo feature
-    public Image getCurrentImage(Image image) {
-        return currentImage;
-    }
-    void resetUndoArray() {
-        undoIndex = 0;
-        undoArray.clear();
-        undoArray.add(imageArray.get(selectedTabIndex));
-        currentImage = undoArray.get(undoIndex);
-    }
 }

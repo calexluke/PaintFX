@@ -71,15 +71,20 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(textButton);
         toggleGroup.getToggles().add(colorGrabButton);
 
+        toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(mouseButton);
+        toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(pencilButton);
         toolVbox.getChildren().add(lineButton);
+        toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(squareButton);
         toolVbox.getChildren().add(rectButton);
         toolVbox.getChildren().add(circleButton);
         toolVbox.getChildren().add(ovalButton);
+        toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(textButton);
         toolVbox.getChildren().add(colorGrabButton);
+        toolVbox.getChildren().add(new Label(" "));
     }
 
     private void configureComboBox() {

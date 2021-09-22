@@ -18,11 +18,13 @@ public class FileManager {
     private StateManager stateManager;
 
     private final FileChooser.ExtensionFilter imageExtensionFilter = new FileChooser.ExtensionFilter("Image files",
-             "*.png", "*.PNG", "*.jpg", "*.jpeg");
+             "*.png", "*.PNG", "*.jpg", "*.jpeg", "*.bmp");
     private final FileChooser.ExtensionFilter pngFilter = new FileChooser.ExtensionFilter(".png",
             "*.png", "*.PNG");
     private final FileChooser.ExtensionFilter jpgFilter = new FileChooser.ExtensionFilter(".jpg",
             "*.jpg", "*.jpeg");
+    private final FileChooser.ExtensionFilter bmpFilter = new FileChooser.ExtensionFilter(".bmp",
+            "*.bmp");
 
     public FileManager(Stage stage, StateManager stateManager) {
         this.stage = stage;
@@ -39,6 +41,7 @@ public class FileManager {
         fileChooser.getExtensionFilters().add(imageExtensionFilter);
         fileChooser.getExtensionFilters().add(pngFilter);
         fileChooser.getExtensionFilters().add(jpgFilter);
+        fileChooser.getExtensionFilters().add(bmpFilter);
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             path = file.getAbsolutePath();
@@ -75,6 +78,7 @@ public class FileManager {
         fileChooser.setTitle("Save Image");
         fileChooser.getExtensionFilters().add(pngFilter);
         fileChooser.getExtensionFilters().add(jpgFilter);
+        fileChooser.getExtensionFilters().add(bmpFilter);
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
             path = file.getAbsolutePath();
@@ -88,11 +92,16 @@ public class FileManager {
             if (filePath.endsWith("png")) {
                 ImageIO.write(SwingFXUtils.fromFXImage(image, null),
                         "png", outFile);
-            } else if (filePath.endsWith("jpg")) {
-                // have to convert file formats to save as JPG
+            } else {
+                // have to convert file formats to save as JPG or BMP
                 ImageManager imageManager = new ImageManager();
                 BufferedImage convertedImage = imageManager.getBufferedImageForJPG(image);
-                ImageIO.write(convertedImage, "jpg", outFile);
+
+                if (filePath.endsWith("jpg")) {
+                    ImageIO.write(convertedImage, "jpg", outFile);
+                } else if (filePath.endsWith("bmp")) {
+                    ImageIO.write(convertedImage, "bmp", outFile);
+                }
             }
             stateManager.setHasUnsavedChanges(false);
         } catch (IOException ex) {
