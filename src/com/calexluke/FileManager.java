@@ -51,13 +51,13 @@ public class FileManager {
         String filePath = getSaveAsFilePathFromUser();
         if (filePath != null) {
             saveImageToFilePath(image, filePath);
-            stateManager.setSaveAsFilePath(filePath);
+            stateManager.setSaveAsFilePathForCurrentTab(filePath);
         }
     }
 
     // if filepath already exists, save there. If not, save as.
     public void saveImage(WritableImage image) {
-        String filePath = stateManager.getSaveAsFilePath();
+        String filePath = stateManager.getSaveAsFilePathForCurrentTab();
         if (filePath != null) {
             saveImageToFilePath(image, filePath);
         } else {

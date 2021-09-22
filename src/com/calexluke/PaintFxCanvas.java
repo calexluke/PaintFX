@@ -1,7 +1,10 @@
 package com.calexluke;
 
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ public class PaintFxCanvas extends Canvas {
 
     private GraphicsContext graphicsContext;
     private StateManager stateManager;
+    private ImageView imageView;
     private ArrayList<DrawOperation> operations = new ArrayList<>();
 
     public PaintFxCanvas(double initialWidth, double initialHeight, StateManager stateManager) {
@@ -24,11 +28,26 @@ public class PaintFxCanvas extends Canvas {
         setOnClickListeners();
     }
 
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+
     // called when canvas is rescaled to re-generate all the drawings at the new scale.
     public void reDraw() {
         for (DrawOperation operation : operations) {
             operation.draw(graphicsContext);
         }
+    }
+
+    public void drawImageOnCanvas() {
+        //Image mainImage = stateManager.getImageFromCurrentTab();
+        Image image = imageView.getImage();
+        clearGraphicsContext();
+        graphicsContext.drawImage(image, 0, 0, this.getWidth(), this.getHeight());
     }
 
     public void clearOperationsList() {
@@ -104,4 +123,40 @@ public class PaintFxCanvas extends Canvas {
             stateManager.setHasUnsavedChanges(true);
         }
     }
+
+    //region Image size and scale
+    public void scaleImage(double newWidth, double newHeight) {
+        imageView.setFitHeight(newHeight);
+        imageView.setFitWidth(newWidth);
+
+        // use the imageView aspect fit properties to determine cavas size
+        scaleCanvasToImageSize();
+        drawImageOnCanvas();
+        reDraw();
+
+        //this.getParent().setAlignment(Pos.CENTER);
+
+    }
+
+    private void scaleCanvasToImageSize() {
+        // workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
+        // will be scaled to maintain aspect ratio, so you can't read it directly off of the view object.
+        // from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
+        setWidth(getActualImageViewWidth());
+        setHeight(getActualImageViewHeight());
+    }
+
+    private double getActualImageViewHeight() {
+        double aspectRatio = imageView.getImage().getWidth() / imageView.getImage().getHeight();
+        double imageViewHeight = Math.min(imageView.getFitHeight(), imageView.getFitWidth() / aspectRatio);
+        return imageViewHeight;
+    }
+
+    private double getActualImageViewWidth() {
+        double aspectRatio = imageView.getImage().getWidth() / imageView.getImage().getHeight();
+        double imageViewWidth = Math.min(imageView.getFitWidth(), imageView.getFitHeight() * aspectRatio);
+        return imageViewWidth;
+    }
+
+    //endregion
 }

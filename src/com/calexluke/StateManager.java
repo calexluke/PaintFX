@@ -2,7 +2,9 @@ package com.calexluke;
 
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /*
@@ -18,14 +20,15 @@ public class StateManager {
         WIDE
     }
 
-    private Image mainImage;
-    private PaintFxCanvas mainCanvas;
+    private ArrayList<Image> imageArray;
+    private ArrayList<PaintFxCanvas> canvasArray;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
     private Color strokeColor;
     private Color fillColor;
-    private String saveAsFilePath;
     private Boolean hasUnsavedChanges;
+    private int selectedTabIndex;
+    private HashMap<Integer, String> saveAsFilePathMap;
 
     // will be used to handle undo operations
     private Image currentImage;
@@ -39,17 +42,19 @@ public class StateManager {
         strokeColor = Color.BLACK;
         fillColor = Color.BLACK;
         hasUnsavedChanges = false;
-        saveAsFilePath = null;
-        mainImage = imageManager.getLogoImage();
+        saveAsFilePathMap = new HashMap<>();
+        selectedTabIndex = 0;
+
+        imageArray = new ArrayList<>();
+        canvasArray = new ArrayList<>();
+
+        imageArray.add(selectedTabIndex, imageManager.getLogoImage());
     }
 
     // setters
 
-    public void setMainImage(Image image) {
-        mainImage = image;
-    }
-    public void setMainCanvas(PaintFxCanvas canvas) {
-        this.mainCanvas = canvas;
+    public void setMainImageInCurrentTab(Image image) {
+        imageArray.add(selectedTabIndex, image);
     }
 
     public void setSelectedTool(PaintFxTool tool) {
@@ -67,20 +72,23 @@ public class StateManager {
     public void setSelectedStrokeWidth(StrokeWidth width) {
         selectedStrokeWidth = width;
     }
-    public void setSaveAsFilePath(String filePath) {
-        saveAsFilePath = filePath;
+    public void setSaveAsFilePathForCurrentTab(String filePath) {
+        saveAsFilePathMap.put(selectedTabIndex, filePath);
     }
     public void setHasUnsavedChanges(Boolean hasChanges) {
         hasUnsavedChanges = hasChanges;
     }
+    public void setSelectedTabIndex(int index) {
+        selectedTabIndex = index;
+    }
 
     // getters
 
-    public Image getMainImage() {
-        return mainImage;
+    public Image getImageFromCurrentTab() {
+        return imageArray.get(selectedTabIndex);
     }
-    public PaintFxCanvas getMainCanvas() {
-        return mainCanvas;
+    public PaintFxCanvas getCanvasFromCurrentTab() {
+        return canvasArray.get(selectedTabIndex);
     }
     public PaintFxTool getSelectedTool() {
         return selectedTool;
@@ -94,21 +102,23 @@ public class StateManager {
     public StrokeWidth getSelectedStrokeWidth() {
         return selectedStrokeWidth;
     }
-    public String getSaveAsFilePath() {
-        return saveAsFilePath;
+    public String getSaveAsFilePathForCurrentTab() {
+        return saveAsFilePathMap.get(selectedTabIndex);
     }
     public Boolean getHasUnsavedChanges() {
         return hasUnsavedChanges;
     }
+    public int getSelectedTabIndex() { return  selectedTabIndex; }
+
 
     // the following is not currently used! For use in future undo feature
     public Image getCurrentImage(Image image) {
         return currentImage;
     }
-     void resetUndoArray() {
+    void resetUndoArray() {
         undoIndex = 0;
         undoArray.clear();
-        undoArray.add(mainImage);
+        undoArray.add(imageArray.get(selectedTabIndex));
         currentImage = undoArray.get(undoIndex);
     }
 }

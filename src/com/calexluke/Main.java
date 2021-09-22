@@ -2,6 +2,7 @@ package com.calexluke;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -20,15 +21,13 @@ public class Main extends Application {
 
     private Group root;
     private BorderPane borderPane;
-    private StackPane stackPane;
+    private TabPane tabPane;
     private Scene scene;
 
     private FileManager fileManager;
     private ImageManager imageManager;
     private StateManager stateManager;
 
-    private PaintFxCanvas mainCanvas;
-    private ImageView mainImageView;
     private PaintFxScrollBar horizontalScrollBar;
     private PaintFxScrollBar verticalScrollBar;
     private ToolBar toolBar;
@@ -49,17 +48,17 @@ public class Main extends Application {
         root = new Group();
         borderPane = new BorderPane();
         scene = new Scene(root, Constants.defaultSceneWidth, Constants.defaultSceneHeight);
-        stackPane = new StackPane();
         root.getChildren().add(borderPane);
-        borderPane.setCenter(stackPane);
+
 
         stateManager = new StateManager();
         imageManager = new ImageManager();
         fileManager = new FileManager(primaryStage, stateManager);
 
+        configureTabPane();
+        configureNewTabWithCanvas();
         configureMenuBar();
         configureToolBar();
-        configureCanvas();
         configureScrollBars();
         configureKeyboardListeners();
 
@@ -74,10 +73,10 @@ public class Main extends Application {
 
         // this has to happen after the stage shows the scene, or the toolbar and menubar won't have correct height/width
         imageWidthOffset = toolBar.getWidth() + verticalScrollBar.getWidth() + (Constants.imageInsetValue);
-        imageHeightOffset = menuBar.getHeight() + horizontalScrollBar.getHeight() + (Constants.imageInsetValue);
+        imageHeightOffset = menuBar.getHeight() + horizontalScrollBar.getHeight() + tabPane.getTabMaxHeight() + (Constants.imageInsetValue) ;
 
+        displayMainImageInCurrentTab();
         scaleBorderPaneToSceneSize();
-        displayMainImage();
     }
 
     public static void main(String[] args) {
@@ -102,7 +101,7 @@ public class Main extends Application {
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.get() == save) {
-            fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas));
+            fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas()));
             System.exit(0);
         } else if (result.get() == quit) {
             System.exit(0);
@@ -136,19 +135,55 @@ public class Main extends Application {
 
         // listeners for scrollbar value change
         // translate image in x or y direction based on scrollbar value
-        ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> stackPane.setTranslateX(-newVal.doubleValue());
-        ChangeListener<Number> verticalValueChangeListener = (ov, oldVal, newVal) -> stackPane.setTranslateY(-newVal.doubleValue());
+        ChangeListener<Number> horizontalValueChangeListener = (ov, oldVal, newVal) -> {
+            int tabIndex = stateManager.getSelectedTabIndex();
+            Node stackPane = tabPane.getTabs().get(tabIndex).getContent();
+            stackPane.setTranslateX(-newVal.doubleValue());
+        };
+        ChangeListener<Number> verticalValueChangeListener = (ov, oldVal, newVal) -> {
+            int tabIndex = stateManager.getSelectedTabIndex();
+            Node stackPane = tabPane.getTabs().get(tabIndex).getContent();
+            stackPane.setTranslateY(-newVal.doubleValue());
+        };
 
         horizontalScrollBar.valueProperty().addListener(horizontalValueChangeListener);
         verticalScrollBar.valueProperty().addListener(verticalValueChangeListener);
     }
 
-    void configureCanvas() {
+    private void configureTabPane() {
+        tabPane = new TabPane();
+        borderPane.setCenter(tabPane);
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                        int index = tabPane.getSelectionModel().getSelectedIndex();
+                        stateManager.setSelectedTabIndex(index);
+                    }
+                }
+        );
+    }
+
+    void configureNewTabWithCanvas() {
+        int newTabIndex = tabPane.getTabs().size();
+        Tab tab = new Tab();
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.CENTER);
+        tab.setText("Tab " + (newTabIndex + 1));
+        tab.setContent(stackPane);
+        tabPane.getTabs().add(tab);
+        configureCanvasInTab(newTabIndex);
+    }
+
+
+    void configureCanvasInTab(int tabIndex) {
+        Tab tab = tabPane.getTabs().get(tabIndex);
+        StackPane stackPane = (StackPane) tab.getContent();
+
         double width = Constants.defaultSceneWidth - imageWidthOffset;
         double height = Constants.defaultSceneHeight - imageHeightOffset;
-        mainCanvas = new PaintFxCanvas(width, height, stateManager);
-        stackPane.getChildren().add(mainCanvas);
-        mainCanvas.toFront();
+        stackPane.getChildren().add(new PaintFxCanvas(width, height, stateManager));
     }
 
     private void configurePaintMenu() {
@@ -163,20 +198,29 @@ public class Main extends Application {
         Menu imageMenu = new Menu("File");
 
         MenuItem load = new MenuItem("Load New Image");
+        MenuItem loadInNewTab = new MenuItem("Load Image In New Tab");
         MenuItem saveAs = new MenuItem("Save As");
         MenuItem save = new MenuItem("Save");
         MenuItem restore = new MenuItem("Restore main logo image");
 
-        load.setOnAction(e -> selectNewImage());
-        restore.setOnAction(e -> displayDefaultLogoImage());
+        load.setOnAction(e -> selectNewImageForCurrentTab());
+        restore.setOnAction(e -> displayDefaultLogoImageInCurrentTab());
         // take snapshot of canvas, send to fileManager to save
-        saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(mainCanvas)));
-        save.setOnAction(e -> fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas)));
+        saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(getCurrentCanvas())));
+        save.setOnAction(e -> fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas())));
+
+        loadInNewTab.setOnAction(e -> {
+            configureNewTabWithCanvas();
+            SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+            selectionModel.select(tabPane.getTabs().size() - 1);
+            selectNewImageForCurrentTab();
+        });
 
         imageMenu.getItems().add(restore);
         imageMenu.getItems().add(save);
         imageMenu.getItems().add(saveAs);
         imageMenu.getItems().add(load);
+        imageMenu.getItems().add(loadInNewTab);
 
         menuBar.getMenus().add(imageMenu);
     }
@@ -187,7 +231,7 @@ public class Main extends Application {
         MenuItem zoomOut = new MenuItem("Zoom -");
         MenuItem autoScale = new MenuItem("Auto-Scale Image");
 
-        autoScale.setOnAction(e -> scaleMainImageToSceneSize());
+        autoScale.setOnAction(e -> scaleCurrentImageToSceneSize());
         zoomIn.setOnAction(e -> zoom(1.1));
         zoomOut.setOnAction(e -> zoom(0.9));
         viewMenu.getItems().add(zoomIn);
@@ -227,7 +271,7 @@ public class Main extends Application {
                 commandIsDown = true;
                 System.out.println("Command down");
             }
-            if (e.getCode() == KeyCode.S && commandIsDown) { fileManager.saveImage(imageManager.getSnapshotImageToSave(mainCanvas)); }
+            if (e.getCode() == KeyCode.S && commandIsDown) { fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas())); }
             if (e.getCode() == KeyCode.EQUALS && commandIsDown) { zoom(1.1);}
             if (e.getCode() == KeyCode.MINUS && commandIsDown) { zoom(0.9);}
             if (e.getCode() == KeyCode.Q && commandIsDown) { quitApplication(); }
@@ -245,107 +289,96 @@ public class Main extends Application {
 
     //region Image Selection and Display
 
-    private void selectNewImage() {
+    private void selectNewImageForCurrentTab() {
         String filePath = fileManager.getImageFilePathFromUser((Stage)scene.getWindow());
         if (filePath != null) {
             try {
                 Image newImage = imageManager.getImageFromFilePath(filePath);
-                stateManager.setMainImage(newImage);
-                displayMainImage();
+                stateManager.setMainImageInCurrentTab(newImage);
+                displayMainImageInCurrentTab();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void displayDefaultLogoImage() {
+    private void displayDefaultLogoImageInCurrentTab() {
         Image logo = imageManager.getLogoImage();
-        stateManager.setMainImage(logo);
-        displayMainImage();
+        stateManager.setMainImageInCurrentTab(logo);
+        displayMainImageInCurrentTab();
     }
 
     // re-initialize mainImageView and repopulate stackpane with imageview and canvas
     // using imageView to handle aspect ratio stuff
-    private void displayMainImage() {
-        Image image = stateManager.getMainImage();
+    private void displayMainImageInCurrentTab() {
+        Image image = stateManager.getImageFromCurrentTab();
 
         if (image != null) {
             // new image view, clear any drawing from canvas
-            mainImageView = new ImageView(image);
-            mainCanvas.clearGraphicsContext();
-            mainCanvas.clearOperationsList();
+            PaintFxCanvas canvas = getCurrentCanvas();
+            canvas.setImageView(new ImageView(image));
+            canvas.clearGraphicsContext();
+            canvas.clearOperationsList();
 
-            mainImageView.setX(0);
-            mainImageView.setY(0);
-            mainImageView.setPreserveRatio(true);
+            canvas.getImageView().setX(0);
+            canvas.getImageView().setY(0);
+            canvas.getImageView().setPreserveRatio(true);
 
-            scaleMainImageToSceneSize();
-            displayMainImageOnCanvas();
+            scaleCurrentImageToSceneSize();
+            canvas.drawImageOnCanvas();
         } else {
             System.out.println("Unable to display main image - mainImage.image is null!");
         }
-    }
-
-    private void displayMainImageOnCanvas() {
-        Image mainImage = stateManager.getMainImage();
-        mainCanvas.clearGraphicsContext();
-        mainCanvas.getGraphicsContext2D().drawImage(mainImage, 0, 0, mainCanvas.getWidth(), mainCanvas.getHeight());
     }
 
     //endregion
 
     //region Image and Pane Scaling
 
-    private void scaleMainImageToSceneSize() {
+    private void scaleCurrentImageToSceneSize() {
         double newWidth = scene.getWidth() - imageWidthOffset;
         double newHeight = scene.getHeight() - imageHeightOffset;
-        scaleMainImage(newWidth, newHeight);
+        scaleCurrentImage(newWidth, newHeight);
     }
 
-    private void scaleMainImage(double newWidth, double newHeight) {
-        mainImageView.setFitHeight(newHeight);
-        mainImageView.setFitWidth(newWidth);
+    private void scaleCurrentImage(double newWidth, double newHeight) {
+        getCurrentCanvas().scaleImage(newWidth, newHeight);
+        updateScrollBars();
+    }
 
-        // use the imageView aspect fit properties to determine cavas size
-        scaleCanvasToImageSize();
-        displayMainImageOnCanvas();
-        mainCanvas.reDraw();
+    private void scaleAllImagesToSceneSize() {
+        double newWidth = scene.getWidth() - imageWidthOffset;
+        double newHeight = scene.getHeight() - imageHeightOffset;
+        scaleAllImages(newWidth, newHeight);
+    }
 
-        stackPane.setAlignment(Pos.CENTER);
+    private void scaleAllImages(double newWidth, double newHeight) {
+        for (Tab tab : tabPane.getTabs()) {
+            StackPane stackPane = (StackPane) tab.getContent();
+            for (Node child : stackPane.getChildren()) {
+                if (child instanceof PaintFxCanvas) {
+                    PaintFxCanvas canvas = (PaintFxCanvas) child;
+                    canvas.scaleImage(newWidth, newHeight);
+                }
+            }
+        }
         updateScrollBars();
     }
 
     private void zoom(double factor) {
-        double currentWidth = mainImageView.getFitWidth();
-        double currentHeight = mainImageView.getFitHeight();
+        ImageView imageView = getCurrentCanvas().getImageView();
+        double currentWidth = imageView.getFitWidth();
+        double currentHeight = imageView.getFitHeight();
 
         // need a boundary, otherwise the app can crash if zoomed in too far. The 3 is just a ballpark number that seems to work.
         boolean zoomedInTooFar = (currentWidth >= 3 * scene.getWidth()) || (currentHeight >= 3 * scene.getHeight());
 
         if (!zoomedInTooFar || factor < 1) {
             // if too far zoomed in, can still zoom back out
-            scaleMainImage(currentWidth * factor, currentHeight * factor);
+            scaleCurrentImage(currentWidth * factor, currentHeight * factor);
+            System.out.println("Horizontal scrollbar: " + horizontalScrollBar.getValue());
+            System.out.println("Vertical scrollbar: " + verticalScrollBar.getValue());
         }
-    }
-
-    private void scaleCanvasToImageSize() {
-        // workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
-        // will be scaled to maintain aspect ratio, so you can't read it directly off of the view object.
-        // from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
-        mainCanvas.setWidth(getActualImageViewWidth());
-        mainCanvas.setHeight(getActualImageViewHeight());
-    }
-
-    private double getActualImageViewHeight() {
-        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
-        double imageViewHeight = Math.min(mainImageView.getFitHeight(), mainImageView.getFitWidth() / aspectRatio);
-        return imageViewHeight;
-    }
-
-    private double getActualImageViewWidth() {
-        double aspectRatio = mainImageView.getImage().getWidth() / mainImageView.getImage().getHeight();
-        double imageViewWidth = Math.min(mainImageView.getFitWidth(), mainImageView.getFitHeight() * aspectRatio);
-        return imageViewWidth;
     }
 
     private void scaleBorderPaneToSceneSize() {
@@ -354,9 +387,7 @@ public class Main extends Application {
         borderPane.setMaxWidth(scene.getWidth());
         borderPane.setMaxHeight(scene.getHeight());
 
-        if (mainImageView != null) {
-            scaleMainImageToSceneSize();
-        }
+        scaleAllImagesToSceneSize();
         updateScrollBars();
     }
 
@@ -371,6 +402,7 @@ public class Main extends Application {
     "onscreen."
     */
     private void updateScrollBars() {
+        Node stackPane = tabPane.getTabs().get(stateManager.getSelectedTabIndex()).getContent();
         Bounds imageBoundsInScene = stackPane.localToScene(stackPane.getBoundsInLocal());
 
         // actual image y values
@@ -382,7 +414,7 @@ public class Main extends Application {
         double imageRightX = imageBoundsInScene.getMaxX();
 
         // Y values where the edges of the image should be if the image is in frame
-        double verticalMin = menuBar.getHeight() + (Constants.imageInsetValue / 2.0);
+        double verticalMin = menuBar.getHeight() + tabPane.getTabMaxHeight() + (Constants.imageInsetValue / 2.0);
         double verticalMax = scene.getHeight() - horizontalScrollBar.getHeight() - (Constants.imageInsetValue / 2.0);
 
         // x values where the edges of the image should be if the image is in frame
@@ -394,4 +426,26 @@ public class Main extends Application {
     }
 
     //endregion
+
+    //region Tab-related
+
+    private PaintFxCanvas getCurrentCanvas() {
+        PaintFxCanvas canvas = null;
+        Tab currentTab = tabPane.getTabs().get(getSelectedTabIndex());
+        StackPane stackPane = (StackPane) currentTab.getContent();
+        for (Node child : stackPane.getChildren()) {
+            if (child instanceof PaintFxCanvas) {
+                canvas = (PaintFxCanvas) child;
+            }
+        }
+        return canvas;
+    }
+
+    private int getSelectedTabIndex() {
+        return tabPane.getSelectionModel().getSelectedIndex();
+    }
+
+    //endregion
+
+
 }
