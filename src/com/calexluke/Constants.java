@@ -8,11 +8,6 @@ public class Constants {
     static public int imageInsetValue = 40;
     static public int DEFAULT_FONT_SIZE = 20;
 
-    static public String SHAPE_KEY_X = "xValue";
-    static public String SHAPE_KEY_Y = "yValue";
-    static public String SHAPE_KEY_WIDTH = "width";
-    static public String SHAPE_KEY_HEIGHT = "height";
-
     static public String aboutAlertTitle = "About Pain(t)";
     static public String helpAlertTitle = "How to Use";
 

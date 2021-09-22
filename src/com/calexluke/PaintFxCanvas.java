@@ -51,7 +51,6 @@ public class PaintFxCanvas extends Canvas {
     }
 
     public void drawImageOnCanvas() {
-        //Image mainImage = stateManager.getImageFromCurrentTab();
         Image image = imageView.getImage();
         clearGraphicsContext();
         graphicsContext.drawImage(image, 0, 0, this.getWidth(), this.getHeight());

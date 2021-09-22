@@ -1,11 +1,9 @@
 package com.calexluke;
 
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
 
 public class PaintFxToolbar extends ToolBar {
 

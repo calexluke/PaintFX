@@ -27,7 +27,7 @@ public class ColorGrabTool extends PaintFxTool {
         Canvas canvas = graphicsContext.getCanvas();
         WritableImage snap = canvas.snapshot(null, null);
         // read color of pixel at coords
-        Color color = snap.getPixelReader().getColor((int)e.getX(), (int)e.getY()); //This just gets the color without assigning it.
+        Color color = snap.getPixelReader().getColor((int)e.getX(), (int)e.getY());
         colorPicker.setValue(color);
         stateManager.setStrokeColor(color);
     }
