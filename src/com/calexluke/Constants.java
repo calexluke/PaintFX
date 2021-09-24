@@ -25,25 +25,26 @@ public class Constants {
                                         """;
 
     static public String aboutAlertText = """
-            PaintFX Version 1.1.0 09/16/2021
-                                                    
+            PaintFX Version 1.2.0 09/24/2021
+                        
             New Features:
-            	•	User can draw a line and use pencil tool on the image
-            	•	User can the line's width and color
-            	•	User can save (and save as) the image to file
-            	•	Scroll bars to ensure image stays in the frame
-            	•	“help” and “about” menu options
-            	•	Auto-scale image to scene size
-                                                    
+            	•	User can draw a shapes on the image (square, rectangle, circle, oval)
+            	•	User can choose stroke and fill color for shapes
+            	•	User can type text on the image
+            	•	App will prompt user to save if they try to quit with unsaved changes
+            	•	Added support for .bmp file type
+            	•	Keyboard shortcuts for save, quit, zoom in, and zoom out
+                •	Added color grabber tool
+                •	User can dynamically resize the image and drawings, as well as zoom in and out
+                •	User can open images in multiple tabs
+                        
             Known Issues:
-            	•	Zoom menu items not currently functional
-            	•	The pencil look produces some jagged-looking lines when making very sharp curves on the widest line-width setting
-                                                    
+            	•	The text tool text box extends offscreen to the right
+                        
             Expected Next Sprint:
-            	•	Zoom in, zoom out
             	•	Undo
             	•	Eraser tool
-                                                    
+                        
             Links:
             	•	https://github.com/calexluke/PaintFX
                                         """;

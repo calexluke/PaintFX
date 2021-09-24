@@ -135,13 +135,15 @@ public class PaintFxCanvas extends Canvas {
     //region Image size and scale
 
     public void scaleImage(double newWidth, double newHeight) {
-        imageView.setFitHeight(newHeight);
-        imageView.setFitWidth(newWidth);
+        if (imageView != null) {
+            imageView.setFitHeight(newHeight);
+            imageView.setFitWidth(newWidth);
 
-        // use the imageView aspect fit properties to determine canvas size
-        scaleCanvasToImageSize();
-        drawImageOnCanvas();
-        reDraw();
+            // use the imageView aspect fit properties to determine canvas size
+            scaleCanvasToImageSize();
+            drawImageOnCanvas();
+            reDraw();
+        }
     }
 
     private void scaleCanvasToImageSize() {
