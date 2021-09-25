@@ -1,6 +1,5 @@
 package com.calexluke;
 
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -20,6 +19,7 @@ public class PaintFxCanvas extends Canvas {
     // This array stores each "operation"/drawing event done on the canvas. This can be used for undo/redo, as well as redrawing
     // the canvas at a new scale after zoom in/zoom out
     private ArrayList<DrawOperation> operations = new ArrayList<>();
+    private ArrayList<DrawOperation> redoStack = new ArrayList<>();
 
     public PaintFxCanvas(double initialWidth, double initialHeight, StateManager stateManager) {
         super(initialWidth, initialHeight);
@@ -91,6 +91,55 @@ public class PaintFxCanvas extends Canvas {
         Color fillColor = stateManager.getFillColor();
         graphicsContext.setStroke(strokeColor);
         graphicsContext.setFill(fillColor);
+    }
+
+    //endregion
+
+    //region Stacks
+
+    public void undoDrawOperation() {
+        DrawOperation opToUndo = popFromUndoStack();
+        if (opToUndo != null) {
+            pushToRedoStack(opToUndo);
+            drawImageOnCanvas();
+            reDraw();
+        }
+    }
+
+    public void redoDrawOperation() {
+        DrawOperation opToRedo = popFromRedoStack();
+        if (opToRedo != null) {
+            pushToUndoStack(opToRedo);
+            drawImageOnCanvas();
+            reDraw();
+        }
+    }
+
+    public void pushToUndoStack(DrawOperation operation) {
+        operations.add(operation);
+    }
+
+    public void pushToRedoStack(DrawOperation operation) {
+        redoStack.add(operation);
+    }
+
+    public DrawOperation popFromUndoStack() {
+        return popDrawOperation(operations);
+    }
+
+    public DrawOperation popFromRedoStack() {
+        return popDrawOperation(redoStack);
+    }
+
+    private DrawOperation popDrawOperation(ArrayList<DrawOperation> stack) {
+        if (stack.size() > 0) {
+            int lastIndex = stack.size() - 1;
+            DrawOperation result = stack.get(lastIndex);
+            stack.remove(lastIndex);
+            return result;
+        } else {
+            return null;
+        }
     }
 
     //endregion

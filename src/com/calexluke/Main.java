@@ -34,6 +34,7 @@ public class Main extends Application {
     private MenuBar menuBar;
 
     private Boolean commandIsDown = false;
+    private Boolean shiftIsDown = false;
 
     // default values, approximations of widths of border elements. These are reset dynamically after init
     private Double imageWidthOffset = 178.0;
@@ -195,34 +196,40 @@ public class Main extends Application {
     }
 
     private void configureImageMenu() {
-        Menu imageMenu = new Menu("File");
+        Menu fileMenu = new Menu("File");
 
         MenuItem load = new MenuItem("Load New Image");
         MenuItem loadInNewTab = new MenuItem("Load Image In New Tab");
         MenuItem saveAs = new MenuItem("Save As");
         MenuItem save = new MenuItem("Save");
         MenuItem restore = new MenuItem("Restore main logo image");
+        MenuItem undo = new MenuItem("Undo");
+        MenuItem redo = new MenuItem("Redo");
+
 
         load.setOnAction(e -> selectNewImageForCurrentTab());
         restore.setOnAction(e -> displayDefaultLogoImageInCurrentTab());
         // take snapshot of canvas, send to fileManager to save
         saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(getCurrentCanvas())));
         save.setOnAction(e -> fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas())));
-
         loadInNewTab.setOnAction(e -> {
             configureNewTabWithCanvas();
             SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
             selectionModel.select(tabPane.getTabs().size() - 1);
             selectNewImageForCurrentTab();
         });
+        undo.setOnAction(e -> getCurrentCanvas().undoDrawOperation());
+        redo.setOnAction(e -> getCurrentCanvas().redoDrawOperation());
 
-        imageMenu.getItems().add(restore);
-        imageMenu.getItems().add(save);
-        imageMenu.getItems().add(saveAs);
-        imageMenu.getItems().add(load);
-        imageMenu.getItems().add(loadInNewTab);
+        fileMenu.getItems().add(restore);
+        fileMenu.getItems().add(save);
+        fileMenu.getItems().add(saveAs);
+        fileMenu.getItems().add(load);
+        fileMenu.getItems().add(loadInNewTab);
+        fileMenu.getItems().add(undo);
+        fileMenu.getItems().add(redo);
 
-        menuBar.getMenus().add(imageMenu);
+        menuBar.getMenus().add(fileMenu);
     }
 
     private void configureViewMenu() {
@@ -269,18 +276,26 @@ public class Main extends Application {
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.COMMAND) {
                 commandIsDown = true;
-                System.out.println("Command down");
+                System.out.println("Command is down");
+            }
+            if (e.getCode() == KeyCode.SHIFT) {
+                shiftIsDown = true;
+                System.out.println("Shift is down");
             }
             if (e.getCode() == KeyCode.S && commandIsDown) { fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas())); }
             if (e.getCode() == KeyCode.EQUALS && commandIsDown) { zoom(1.1);}
             if (e.getCode() == KeyCode.MINUS && commandIsDown) { zoom(0.9);}
             if (e.getCode() == KeyCode.Q && commandIsDown) { quitApplication(); }
+            if (e.getCode() == KeyCode.Z && commandIsDown && !shiftIsDown) { getCurrentCanvas().undoDrawOperation(); }
+            if (e.getCode() == KeyCode.Z && commandIsDown && shiftIsDown) { getCurrentCanvas().redoDrawOperation(); }
         });
 
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.COMMAND) {
                 commandIsDown = false;
-                System.out.println("Command up");
+            }
+            if (e.getCode() == KeyCode.SHIFT) {
+                shiftIsDown = false;
             }
         });
     }
