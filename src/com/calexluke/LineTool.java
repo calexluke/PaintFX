@@ -3,9 +3,6 @@ package com.calexluke;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.LineTo;
-
-import java.util.ArrayList;
 
 // tool for drawing a straight line on  the canvas
 
@@ -23,13 +20,13 @@ public class LineTool extends PaintFxTool {
         makesChangesToCanvas = true;
     }
 
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         // get the x/y co-ords scaled to the dimensions of canvas
         startX = e.getX() / graphicsContext.getCanvas().getWidth();
         startY = e.getY() / graphicsContext.getCanvas().getHeight();
     }
 
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledLineParameters(e, graphicsContext);
         LineDrawOperation operation = createLineOperation(graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
@@ -39,7 +36,7 @@ public class LineTool extends PaintFxTool {
         canvas.pushToUndoStack(operation);
     }
 
-    public void onDrag(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledLineParameters(e, graphicsContext);
         LineDrawOperation operation = createLineOperation(graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas)graphicsContext.getCanvas();

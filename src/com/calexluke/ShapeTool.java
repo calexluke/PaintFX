@@ -4,7 +4,6 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import java.util.ArrayList;
 
 public class ShapeTool extends PaintFxTool {
 
@@ -25,7 +24,7 @@ public class ShapeTool extends PaintFxTool {
     }
 
     // store the coords where the user first clicks
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         startX = e.getX();
         startY = e.getY();
     }

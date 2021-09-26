@@ -27,7 +27,7 @@ public class TextTool extends PaintFxTool {
         makesChangesToCanvas = true;
     }
 
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         // if text field exists, render text in its position, and remove it
         // if text field does not exist, create it
         this.graphicsContext = graphicsContext;
@@ -35,11 +35,11 @@ public class TextTool extends PaintFxTool {
         StackPane pane = (StackPane) graphicsContext.getCanvas().getParent();
         if (textField != null) {
             calculateScaledParameters(e, graphicsContext);
-            createTextDrawOperation(graphicsContext, operations);
+            createTextDrawOperation(graphicsContext);
             removeTextFieldsFromPane();
             textField = null;
         } else {
-            createNewTextField(e, operations);
+            createNewTextField(e);
         }
     }
 
@@ -53,17 +53,18 @@ public class TextTool extends PaintFxTool {
         relativeFontSize = Constants.DEFAULT_FONT_SIZE / canvasWidth;
     }
 
-    private void createTextDrawOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    private void createTextDrawOperation(GraphicsContext graphicsContext) {
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         Paint color = graphicsContext.getStroke();
         String text = textField.getText();
 
         // add operation to array for undo/redo and scaling
         TextDrawOperation textOp = new TextDrawOperation(text, relativeX, relativeY, relativeFontSize, color);
         textOp.draw(graphicsContext);
-        operations.add(textOp);
+        canvas.pushToUndoStack(textOp);
     }
 
-    private void createNewTextField(MouseEvent e, ArrayList<DrawOperation> operations) {
+    private void createNewTextField(MouseEvent e) {
         StackPane pane = (StackPane) graphicsContext.getCanvas().getParent();
         textField = new TextField();
 
@@ -82,7 +83,7 @@ public class TextTool extends PaintFxTool {
         textField.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 calculateScaledParameters(e, graphicsContext);
-                createTextDrawOperation(graphicsContext, operations);
+                createTextDrawOperation(graphicsContext);
                 removeTextFieldsFromPane();
                 textField = null;
             }

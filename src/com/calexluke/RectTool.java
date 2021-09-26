@@ -8,12 +8,13 @@ import java.util.ArrayList;
 
 public class RectTool extends ShapeTool {
 
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
-        createRectOperation(graphicsContext, operations);
+        createRectOperation(graphicsContext);
     }
 
-    protected void createRectOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    protected void createRectOperation(GraphicsContext graphicsContext) {
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         Paint strokeColor = graphicsContext.getStroke();
         Paint fillColor = graphicsContext.getFill();
 
@@ -21,6 +22,6 @@ public class RectTool extends ShapeTool {
         RectDrawOperation rectOp = new RectDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight,
                 relativeLineWidth, strokeColor, fillColor);
         rectOp.draw(graphicsContext);
-        operations.add(rectOp);
+        canvas.pushToUndoStack(rectOp);
     }
 }

@@ -2,7 +2,6 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 import java.util.ArrayList;
@@ -12,16 +11,60 @@ import java.util.ArrayList;
 
 public class PencilTool extends LineTool {
 
-    public void onDrag(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
-        PaintFxCanvas canvas = (PaintFxCanvas)graphicsContext.getCanvas();
+    // store the list of points the hand drawn line goes through
+    private ArrayList<Double> xValues;
+    private ArrayList<Double> yValues;
+    private PencilDrawOperation pencilOperation;
+
+    @Override
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
+        super.onMousePressed(e, graphicsContext);
+        if (xValues != null) {
+            xValues.clear();
+        } else {
+            xValues = new ArrayList<>();
+        }
+
+        if (yValues != null) {
+            yValues.clear();
+        } else {
+            yValues = new ArrayList<>();
+        }
+        xValues.add(startX);
+        yValues.add(startY);
+    }
+
+    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledLineParameters(e, graphicsContext);
-        LineDrawOperation operation = createLineOperation(graphicsContext);
-        operation.draw(graphicsContext);
-        canvas.pushToUndoStack(operation);
+        // add current point to array
+        xValues.add(relativeX);
+        yValues.add(relativeY);
+
+        // draw the new line segment
+        LineDrawOperation segmentOperation = createLineOperation(graphicsContext);
+        segmentOperation.draw(graphicsContext);
 
         // current coords are start of the next segment
         startX = relativeX;
         startY = relativeY;
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+        calculateScaledLineParameters(e, graphicsContext);
+        PencilDrawOperation operation = createPencilDrawOperation(graphicsContext);
+        canvas.pushToUndoStack(operation);
+        canvas.drawImageOnCanvas();
+        canvas.reDraw();
+        // add operation to array for undo/redo and scaling
+
+    }
+
+    protected PencilDrawOperation createPencilDrawOperation(GraphicsContext graphicsContext) {
+        Paint color = graphicsContext.getStroke();
+        PencilDrawOperation pencilOp = new PencilDrawOperation(xValues, yValues, color, relativeLineWidth);
+        return pencilOp;
     }
 }
 

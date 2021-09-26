@@ -8,12 +8,13 @@ import java.util.ArrayList;
 
 public class OvalTool extends ShapeTool {
 
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
-        createOvalOperation(graphicsContext, operations);
+        createOvalOperation(graphicsContext);
     }
 
-    protected void createOvalOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    protected void createOvalOperation(GraphicsContext graphicsContext) {
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         Paint strokeColor = graphicsContext.getStroke();
         Paint fillColor = graphicsContext.getFill();
 
@@ -21,6 +22,6 @@ public class OvalTool extends ShapeTool {
         OvalDrawOperation ovalOp = new OvalDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight,
                 relativeLineWidth, strokeColor, fillColor);
         ovalOp.draw(graphicsContext);
-        operations.add(ovalOp);
+        canvas.pushToUndoStack(ovalOp);
     }
 }

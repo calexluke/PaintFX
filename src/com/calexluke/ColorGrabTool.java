@@ -1,14 +1,11 @@
 package com.calexluke;
 
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
 
 public class ColorGrabTool extends PaintFxTool {
 
@@ -22,7 +19,7 @@ public class ColorGrabTool extends PaintFxTool {
     }
 
     @Override
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         // take a snapshot of the canvas
         Canvas canvas = graphicsContext.getCanvas();
         WritableImage snap = canvas.snapshot(null, null);

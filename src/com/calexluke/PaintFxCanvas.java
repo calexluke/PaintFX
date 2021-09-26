@@ -155,7 +155,7 @@ public class PaintFxCanvas extends Canvas {
     private void onMouseReleased(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onMouseReleased(e, graphicsContext, operations);
+        tool.onMouseReleased(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }
@@ -164,7 +164,7 @@ public class PaintFxCanvas extends Canvas {
     private void onDrag(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onDrag(e, graphicsContext, operations);
+        tool.onDrag(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }
@@ -173,7 +173,7 @@ public class PaintFxCanvas extends Canvas {
     private void onMousePressed(MouseEvent e) {
         updateGraphicsContext();
         PaintFxTool tool = stateManager.getSelectedTool();
-        tool.onMousePressed(e, graphicsContext, operations);
+        tool.onMousePressed(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
             stateManager.setHasUnsavedChanges(true);
         }
