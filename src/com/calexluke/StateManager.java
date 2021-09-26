@@ -23,6 +23,7 @@ public class StateManager {
     private ArrayList<Image> imageArray;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
+    private int selectedPolygonSides;
     private Color strokeColor;
     private Color fillColor;
     private Boolean hasUnsavedChanges;
@@ -38,6 +39,7 @@ public class StateManager {
         hasUnsavedChanges = false;
         saveAsFilePathMap = new HashMap<>();
         selectedTabIndex = 0;
+        selectedPolygonSides = 3;
 
         imageArray = new ArrayList<>();
         imageArray.add(selectedTabIndex, imageManager.getLogoImage());
@@ -63,6 +65,7 @@ public class StateManager {
     public void setSelectedStrokeWidth(StrokeWidth width) {
         selectedStrokeWidth = width;
     }
+    public void setSelectedPolygonSides(int sides) { selectedPolygonSides = sides; }
     public void setSaveAsFilePathForCurrentTab(String filePath) {
         saveAsFilePathMap.put(selectedTabIndex, filePath);
     }
@@ -90,6 +93,7 @@ public class StateManager {
     public StrokeWidth getSelectedStrokeWidth() {
         return selectedStrokeWidth;
     }
+    public int getSelectedPolygonSides() { return selectedPolygonSides; }
     public String getSaveAsFilePathForCurrentTab() {
         return saveAsFilePathMap.get(selectedTabIndex);
     }

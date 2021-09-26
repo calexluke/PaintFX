@@ -34,6 +34,7 @@ public class PaintFxCanvas extends Canvas {
     public ImageView getImageView() {
         return imageView;
     }
+    public StateManager getStateManager() { return stateManager; }
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
     }

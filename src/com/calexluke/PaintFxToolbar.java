@@ -11,6 +11,7 @@ public class PaintFxToolbar extends ToolBar {
     private VBox toolVbox;
     private ColorPicker strokeColorPicker;
     private ColorPicker fillColorPicker;
+    private Slider polygonSlider;
 
     public PaintFxToolbar(StateManager stateManager) {
         super();
@@ -20,9 +21,23 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox = new VBox(5);
         this.getItems().add(toolVbox);
         this.setOrientation(Orientation.VERTICAL);
+        configurePolygonSlider();
         configureToggleButtons();
         configureComboBox();
         configureColorPickers();
+    }
+
+    private void configurePolygonSlider() {
+        polygonSlider = new Slider();
+        polygonSlider.setMin(3);
+        polygonSlider.setMax(13);
+        polygonSlider.setValue(5);
+        polygonSlider.setMajorTickUnit(2);
+        polygonSlider.setMinorTickCount(1);
+        polygonSlider.setShowTickLabels(true);
+        polygonSlider.setShowTickMarks(true);
+        polygonSlider.setSnapToTicks(true);
+        polygonSlider.valueProperty().addListener((options, oldValue, newValue) -> stateManager.setSelectedPolygonSides((int)polygonSlider.getValue()));
     }
 
     private void configureToggleButtons() {
@@ -31,12 +46,12 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton mouseButton = new ToggleButton("Mouse");
         ToggleButton pencilButton = new ToggleButton("Pencil");
         ToggleButton eraseButton = new ToggleButton("Eraser");
-
         ToggleButton lineButton = new ToggleButton("Line");
         ToggleButton squareButton = new ToggleButton("Square");
         ToggleButton rectButton = new ToggleButton("Rectangle");
         ToggleButton circleButton = new ToggleButton("Circle");
         ToggleButton ovalButton = new ToggleButton("Oval");
+        ToggleButton polygonButton = new ToggleButton("Polygon");
         ToggleButton textButton = new ToggleButton("Text");
         ToggleButton colorGrabButton = new ToggleButton("Grab Color");
 
@@ -49,31 +64,31 @@ public class PaintFxToolbar extends ToolBar {
         rectButton.setMaxWidth(Double.MAX_VALUE);
         circleButton.setMaxWidth(Double.MAX_VALUE);
         ovalButton.setMaxWidth(Double.MAX_VALUE);
+        polygonButton.setMaxWidth(Double.MAX_VALUE);
         colorGrabButton.setMaxWidth(Double.MAX_VALUE);
         textButton.setMaxWidth(Double.MAX_VALUE);
 
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
         eraseButton.setOnAction(e -> stateManager.setSelectedTool(new EraserTool()));
-
-
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
         squareButton.setOnAction(e -> stateManager.setSelectedTool(new SquareTool()));
         rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
         circleButton.setOnAction(e -> stateManager.setSelectedTool(new CircleTool()));
         ovalButton.setOnAction(e -> stateManager.setSelectedTool(new OvalTool()));
+        polygonButton.setOnAction(e -> stateManager.setSelectedTool(new PolygonTool()));
         textButton.setOnAction(e -> stateManager.setSelectedTool(new TextTool()));
         colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
 
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
         toggleGroup.getToggles().add(eraseButton);
-
         toggleGroup.getToggles().add(lineButton);
         toggleGroup.getToggles().add(squareButton);
         toggleGroup.getToggles().add(rectButton);
         toggleGroup.getToggles().add(circleButton);
         toggleGroup.getToggles().add(ovalButton);
+        toggleGroup.getToggles().add(polygonButton);
         toggleGroup.getToggles().add(textButton);
         toggleGroup.getToggles().add(colorGrabButton);
 
@@ -88,6 +103,8 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(rectButton);
         toolVbox.getChildren().add(circleButton);
         toolVbox.getChildren().add(ovalButton);
+        toolVbox.getChildren().add(polygonSlider);
+        toolVbox.getChildren().add(polygonButton);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(textButton);
         toolVbox.getChildren().add(colorGrabButton);
