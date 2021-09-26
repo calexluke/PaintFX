@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class PencilTool extends LineTool {
 
     // store the list of points the hand drawn line goes through
-    private ArrayList<Double> xValues;
-    private ArrayList<Double> yValues;
+    protected ArrayList<Double> xValues;
+    protected ArrayList<Double> yValues;
 
     @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {

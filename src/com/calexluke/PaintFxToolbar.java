@@ -30,6 +30,8 @@ public class PaintFxToolbar extends ToolBar {
         ToggleGroup toggleGroup = new ToggleGroup();
         ToggleButton mouseButton = new ToggleButton("Mouse");
         ToggleButton pencilButton = new ToggleButton("Pencil");
+        ToggleButton eraseButton = new ToggleButton("Eraser");
+
         ToggleButton lineButton = new ToggleButton("Line");
         ToggleButton squareButton = new ToggleButton("Square");
         ToggleButton rectButton = new ToggleButton("Rectangle");
@@ -41,6 +43,7 @@ public class PaintFxToolbar extends ToolBar {
         // all buttons will be the width of the VBox
         mouseButton.setMaxWidth(Double.MAX_VALUE);
         pencilButton.setMaxWidth(Double.MAX_VALUE);
+        eraseButton.setMaxWidth(Double.MAX_VALUE);
         lineButton.setMaxWidth(Double.MAX_VALUE);
         squareButton.setMaxWidth(Double.MAX_VALUE);
         rectButton.setMaxWidth(Double.MAX_VALUE);
@@ -51,6 +54,9 @@ public class PaintFxToolbar extends ToolBar {
 
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
+        eraseButton.setOnAction(e -> stateManager.setSelectedTool(new EraserTool()));
+
+
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
         squareButton.setOnAction(e -> stateManager.setSelectedTool(new SquareTool()));
         rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
@@ -61,6 +67,8 @@ public class PaintFxToolbar extends ToolBar {
 
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
+        toggleGroup.getToggles().add(eraseButton);
+
         toggleGroup.getToggles().add(lineButton);
         toggleGroup.getToggles().add(squareButton);
         toggleGroup.getToggles().add(rectButton);
@@ -73,6 +81,7 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(mouseButton);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(pencilButton);
+        toolVbox.getChildren().add(eraseButton);
         toolVbox.getChildren().add(lineButton);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(squareButton);
