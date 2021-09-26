@@ -49,6 +49,7 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton lineButton = new ToggleButton("Line");
         ToggleButton squareButton = new ToggleButton("Square");
         ToggleButton rectButton = new ToggleButton("Rectangle");
+        ToggleButton roundedRectButton = new ToggleButton("Rounded Rectangle");
         ToggleButton circleButton = new ToggleButton("Circle");
         ToggleButton ovalButton = new ToggleButton("Oval");
         ToggleButton polygonButton = new ToggleButton("Polygon");
@@ -62,6 +63,7 @@ public class PaintFxToolbar extends ToolBar {
         lineButton.setMaxWidth(Double.MAX_VALUE);
         squareButton.setMaxWidth(Double.MAX_VALUE);
         rectButton.setMaxWidth(Double.MAX_VALUE);
+        roundedRectButton.setMaxWidth(Double.MAX_VALUE);
         circleButton.setMaxWidth(Double.MAX_VALUE);
         ovalButton.setMaxWidth(Double.MAX_VALUE);
         polygonButton.setMaxWidth(Double.MAX_VALUE);
@@ -74,6 +76,7 @@ public class PaintFxToolbar extends ToolBar {
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
         squareButton.setOnAction(e -> stateManager.setSelectedTool(new SquareTool()));
         rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
+        roundedRectButton.setOnAction(e -> stateManager.setSelectedTool(new RoundedRectTool()));
         circleButton.setOnAction(e -> stateManager.setSelectedTool(new CircleTool()));
         ovalButton.setOnAction(e -> stateManager.setSelectedTool(new OvalTool()));
         polygonButton.setOnAction(e -> stateManager.setSelectedTool(new PolygonTool()));
@@ -86,6 +89,7 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(lineButton);
         toggleGroup.getToggles().add(squareButton);
         toggleGroup.getToggles().add(rectButton);
+        toggleGroup.getToggles().add(roundedRectButton);
         toggleGroup.getToggles().add(circleButton);
         toggleGroup.getToggles().add(ovalButton);
         toggleGroup.getToggles().add(polygonButton);
@@ -101,6 +105,7 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(squareButton);
         toolVbox.getChildren().add(rectButton);
+        toolVbox.getChildren().add(roundedRectButton);
         toolVbox.getChildren().add(circleButton);
         toolVbox.getChildren().add(ovalButton);
         toolVbox.getChildren().add(polygonSlider);
