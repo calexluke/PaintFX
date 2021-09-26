@@ -45,7 +45,9 @@ public class PaintFxCanvas extends Canvas {
 
     // called when canvas is rescaled to re-generate all the drawings at the new scale.
     public void reDraw() {
+        System.out.println("Redrawing operation stack: ");
         for (DrawOperation operation : operations) {
+            System.out.println("Draw " + operation);
             operation.draw(graphicsContext);
         }
     }

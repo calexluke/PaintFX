@@ -18,17 +18,10 @@ public class PencilTool extends LineTool {
     @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         super.onMousePressed(e, graphicsContext);
-        if (xValues != null) {
-            xValues.clear();
-        } else {
-            xValues = new ArrayList<>();
-        }
 
-        if (yValues != null) {
-            yValues.clear();
-        } else {
-            yValues = new ArrayList<>();
-        }
+        // start of new pencil drawing, re-initialize array of points
+        xValues = new ArrayList<>();
+        yValues = new ArrayList<>();
         xValues.add(startX);
         yValues.add(startY);
     }
@@ -40,8 +33,8 @@ public class PencilTool extends LineTool {
         xValues.add(relativeX);
         yValues.add(relativeY);
 
-        // draw the new line segment
-        LineDrawOperation segmentOperation = createLineOperation(graphicsContext);
+        // draw the new line segment (using LineTool's operation method for the new segment)
+        DrawOperation segmentOperation = super.createDrawOperation(graphicsContext);
         segmentOperation.draw(graphicsContext);
 
         // current coords are start of the next segment
@@ -49,18 +42,9 @@ public class PencilTool extends LineTool {
         startY = relativeY;
     }
 
+    // called in LineTool onMouseReleased, to store the entire pencil drawing operation
     @Override
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
-        calculateScaledLineParameters(e, graphicsContext);
-        PencilDrawOperation operation = createPencilDrawOperation(graphicsContext);
-        // add operation to array for undo/redo and scaling
-        canvas.pushToUndoStack(operation);
-        canvas.drawImageOnCanvas();
-        canvas.reDraw();
-    }
-
-    protected PencilDrawOperation createPencilDrawOperation(GraphicsContext graphicsContext) {
+    protected DrawOperation createDrawOperation(GraphicsContext graphicsContext) {
         Paint color = graphicsContext.getStroke();
         PencilDrawOperation pencilOp = new PencilDrawOperation(xValues, yValues, color, relativeLineWidth);
         return pencilOp;

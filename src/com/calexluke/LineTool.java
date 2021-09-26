@@ -20,25 +20,28 @@ public class LineTool extends PaintFxTool {
         makesChangesToCanvas = true;
     }
 
+    @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         // get the x/y co-ords scaled to the dimensions of canvas
         startX = e.getX() / graphicsContext.getCanvas().getWidth();
         startY = e.getY() / graphicsContext.getCanvas().getHeight();
     }
 
+    @Override
     public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateScaledLineParameters(e, graphicsContext);
-        LineDrawOperation operation = createLineOperation(graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
-
+        calculateScaledLineParameters(e, graphicsContext);
+        DrawOperation operation = createDrawOperation(graphicsContext);
         // add operation to array for undo/redo and scaling
-        operation.draw(graphicsContext);
         canvas.pushToUndoStack(operation);
+        canvas.drawImageOnCanvas();
+        canvas.reDraw();
     }
 
+    @Override
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledLineParameters(e, graphicsContext);
-        LineDrawOperation operation = createLineOperation(graphicsContext);
+        DrawOperation operation = createDrawOperation(graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas)graphicsContext.getCanvas();
 
         // draw but don't save to operations array (drawing not final until mouse release)
@@ -57,7 +60,7 @@ public class LineTool extends PaintFxTool {
         relativeLineWidth = graphicsContext.getLineWidth() / canvasWidth;
     }
 
-    protected LineDrawOperation createLineOperation(GraphicsContext graphicsContext) {
+    protected DrawOperation createDrawOperation(GraphicsContext graphicsContext) {
         Paint color = graphicsContext.getStroke();
         LineDrawOperation lineOp = new LineDrawOperation(startX, startY, relativeX, relativeY, color, relativeLineWidth);
         return lineOp;
