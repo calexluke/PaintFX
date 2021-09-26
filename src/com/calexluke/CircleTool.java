@@ -3,11 +3,9 @@ package com.calexluke;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 
-import java.util.ArrayList;
-
 public class CircleTool extends OvalTool {
 
-    protected void createOvalOperation(GraphicsContext graphicsContext, ArrayList<DrawOperation> operations) {
+    protected CircleDrawOperation createOvalOperation(GraphicsContext graphicsContext) {
         Paint strokeColor = graphicsContext.getStroke();
         Paint fillColor = graphicsContext.getFill();
 
@@ -17,7 +15,7 @@ public class CircleTool extends OvalTool {
         // add operation to array for undo/redo and scaling
         CircleDrawOperation circleOp = new CircleDrawOperation(relativeTopLeftX, relativeTopLeftY, diameter, diameter,
                 relativeLineWidth, strokeColor, fillColor);
-        circleOp.draw(graphicsContext);
-        operations.add(circleOp);
+
+        return circleOp;
     }
 }

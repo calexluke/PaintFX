@@ -40,6 +40,8 @@ public class LineTool extends PaintFxTool {
         calculateScaledLineParameters(e, graphicsContext);
         LineDrawOperation operation = createLineOperation(graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas)graphicsContext.getCanvas();
+
+        // draw but don't save to operations array (drawing not final until mouse release)
         canvas.drawImageOnCanvas();
         canvas.reDraw();
         operation.draw(graphicsContext);
