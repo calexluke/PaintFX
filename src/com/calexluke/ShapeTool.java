@@ -4,14 +4,15 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Paint;
 
-public class ShapeTool extends PaintFxTool {
+public abstract class ShapeTool extends PaintFxTool {
 
     // coords of the initial point user clicked
     double startX;
     double startY;
 
-    // parameters of the shape to draw
+    // parameters of the shape to draw, relative to the canvas size
     double relativeTopLeftX;
     double relativeTopLeftY;
     double relativeWidth;
@@ -24,9 +25,33 @@ public class ShapeTool extends PaintFxTool {
     }
 
     // store the coords where the user first clicks
+    @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
         startX = e.getX();
         startY = e.getY();
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
+        calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+        ShapeDrawOperation operation = createShapeOperation(graphicsContext);
+        // add final operation to array for undo/redo and scaling
+        operation.draw(graphicsContext);
+        canvas.pushToUndoStack(operation);
+    }
+
+    @Override
+    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
+        calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+        ShapeDrawOperation operation = createShapeOperation(graphicsContext);
+
+        // draw but don't save to operations array (drawing not final until mouse release)
+        // used for interactive draw
+        canvas.drawImageOnCanvas();
+        canvas.reDraw();
+        operation.draw(graphicsContext);
     }
 
     // calculate the parameters used to draw rectangles, squares, ovals, circles
@@ -50,4 +75,7 @@ public class ShapeTool extends PaintFxTool {
 
         relativeLineWidth = graphicsContext.getLineWidth() / canvasWidth;
     }
+
+    // overridden in subclasses to create ovals, rectangles, etc
+    protected abstract ShapeDrawOperation createShapeOperation(GraphicsContext graphicsContext);
 }

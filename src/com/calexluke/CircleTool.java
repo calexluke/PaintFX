@@ -5,7 +5,8 @@ import javafx.scene.paint.Paint;
 
 public class CircleTool extends OvalTool {
 
-    protected CircleDrawOperation createOvalOperation(GraphicsContext graphicsContext) {
+    @Override
+    protected ShapeDrawOperation createShapeOperation(GraphicsContext graphicsContext) {
         Paint strokeColor = graphicsContext.getStroke();
         Paint fillColor = graphicsContext.getFill();
 

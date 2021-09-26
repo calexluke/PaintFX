@@ -14,7 +14,6 @@ public class PencilTool extends LineTool {
     // store the list of points the hand drawn line goes through
     private ArrayList<Double> xValues;
     private ArrayList<Double> yValues;
-    private PencilDrawOperation pencilOperation;
 
     @Override
     public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
@@ -34,6 +33,7 @@ public class PencilTool extends LineTool {
         yValues.add(startY);
     }
 
+    @Override
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         calculateScaledLineParameters(e, graphicsContext);
         // add current point to array
@@ -54,11 +54,10 @@ public class PencilTool extends LineTool {
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         calculateScaledLineParameters(e, graphicsContext);
         PencilDrawOperation operation = createPencilDrawOperation(graphicsContext);
+        // add operation to array for undo/redo and scaling
         canvas.pushToUndoStack(operation);
         canvas.drawImageOnCanvas();
         canvas.reDraw();
-        // add operation to array for undo/redo and scaling
-
     }
 
     protected PencilDrawOperation createPencilDrawOperation(GraphicsContext graphicsContext) {
