@@ -4,7 +4,6 @@ package com.calexluke;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Paint;
 
 public abstract class ShapeTool extends PaintFxTool {
 
@@ -33,7 +32,7 @@ public abstract class ShapeTool extends PaintFxTool {
 
     @Override
     public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
+        calculateRelativeShapeParameters(e.getX(), e.getY(), graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         ShapeDrawOperation operation = createShapeOperation(graphicsContext);
         // add final operation to array for undo/redo and scaling
@@ -43,7 +42,7 @@ public abstract class ShapeTool extends PaintFxTool {
 
     @Override
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateScaledShapeParameters(e.getX(), e.getY(), graphicsContext);
+        calculateRelativeShapeParameters(e.getX(), e.getY(), graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         ShapeDrawOperation operation = createShapeOperation(graphicsContext);
 
@@ -54,10 +53,10 @@ public abstract class ShapeTool extends PaintFxTool {
         operation.draw(graphicsContext);
     }
 
-    // calculate the parameters used to draw rectangles, squares, ovals, circles
+    // calculate the parameters used to draw rectangles, squares, ovals, circles, etc
     // pass in co-ords from where the user released the mouse
-    // These values are scaled by the current size of canvas, so can be re-drawn at other scales in ShapeDrawOperations
-    protected void calculateScaledShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
+    // These values are relative the current size of canvas, so can be re-drawn at other scales in ShapeDrawOperations
+    protected void calculateRelativeShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
         double canvasWidth = graphicsContext.getCanvas().getWidth();
         double canvasHeight = graphicsContext.getCanvas().getHeight();
 

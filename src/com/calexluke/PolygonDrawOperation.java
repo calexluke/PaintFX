@@ -41,8 +41,8 @@ public class PolygonDrawOperation extends ShapeDrawOperation {
 
         for (int i = 0; i < nPoints; i++) {
             double theta = i * segmentAngle;
-            // r*cos(theta) calculates x value relative to (0,0)
-            // have to translate this based on the actual center x value
+            // r*cos(theta) and r*sin(theta) calculate coords relative to (0,0)
+            // have to translate this based on the actual center coords
             double x = radius * Math.cos(theta) + scaledCenterX;
             double y = radius * Math.sin(theta) + scaledCenterY;
             xPoints[i] = x;

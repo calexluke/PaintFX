@@ -24,9 +24,9 @@ public abstract class ShapeDrawOperation implements DrawOperation {
     public ShapeDrawOperation(double x, double y, double width, double height, double lineWidth, Paint strokeColor, Paint fillColor) {
         relativeTopLeftX = x;
         relativeTopLeftY = y;
-        this.relativeWidth = width;
-        this.relativeHeight = height;
-        this.relativeLineWidth = lineWidth;
+        relativeWidth = width;
+        relativeHeight = height;
+        relativeLineWidth = lineWidth;
         this.strokeColor = strokeColor;
         this.fillColor = fillColor;
     }
