@@ -39,7 +39,7 @@ public class StateManager {
         hasUnsavedChanges = false;
         saveAsFilePathMap = new HashMap<>();
         selectedTabIndex = 0;
-        selectedPolygonSides = 3;
+        selectedPolygonSides = 5;
 
         imageArray = new ArrayList<>();
         imageArray.add(selectedTabIndex, imageManager.getLogoImage());

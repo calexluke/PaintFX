@@ -9,11 +9,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+// lasso tool does the following: displays dashed rect around user-selected area,
+// takes snapshot of image inside selected area,
+// user can drag and drop the snapshot from the selected area
 public class LassoTool extends  ShapeTool {
 
     private WritableImage selectedSnapshot;
     private LassoDrawOperation lassoOperation;
     private LassoMode currentMode = LassoMode.SELECTION;
+
+    // parameters for the selection box
+    double topLeftX;
+    double topLeftY;
+    double width;
+    double height;
 
     // distance between mouse click and top left corner of selection rect
     double deltaX;
@@ -25,12 +34,67 @@ public class LassoTool extends  ShapeTool {
     }
 
     @Override
-    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
+    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
+
+        if (currentMode == LassoMode.SELECTION) {
+            // starting coords for selection box
+            startX = e.getX();
+            startY = e.getY();
+
+        } else if (currentMode == LassoMode.DRAGGING) {
+            // only happens after selection box defined
+            PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+            // topleft x/y were calculated when selection box was drawn
+            deltaX = e.getX() - topLeftX;
+            deltaY = e.getY() - topLeftY;
+
+            if (deltaX < 0 || deltaY < 0) {
+                // clicked outside of prior selection, user starts selecting a new area
+                startX = e.getX();
+                startY = e.getY();
+                currentMode = LassoMode.SELECTION;
+            } else {
+                // clicked inside selection
+                // start drag process
+                // lasso operation and snapshot were created at the end of selection process
+                canvas.pushToUndoStack(lassoOperation);
+                canvas.drawImageOnCanvas();
+                canvas.reDraw();
+                drawTempImage(e, graphicsContext);
+            }
+        }
+    }
+
+    @Override
+    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
         calculateRelativeShapeParameters(e.getX(), e.getY(), graphicsContext);
+        calculateAbsoluteShapeParameters(e.getX(), e.getY(), graphicsContext);
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
 
         if (currentMode == LassoMode.SELECTION) {
+            // draw dashed rect for selection
+            ShapeDrawOperation operation = createShapeOperation(graphicsContext);
+            canvas.drawImageOnCanvas();
+            canvas.reDraw();
+            operation.draw(graphicsContext);
 
+        } else if (currentMode == LassoMode.DRAGGING) {
+            // clear space behind selected snapshot
+            canvas.drawImageOnCanvas();
+            canvas.reDraw();
+
+            // redraw snapshot on canvas in new location
+            drawTempImage(e, graphicsContext);
+        }
+    }
+
+    @Override
+    public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) {
+        calculateRelativeShapeParameters(e.getX(), e.getY(), graphicsContext);
+        calculateAbsoluteShapeParameters(e.getX(), e.getY(), graphicsContext);
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+
+        if (currentMode == LassoMode.SELECTION) {
             // remove dashed rect to take clean snapshot
             canvas.drawImageOnCanvas();
             canvas.reDraw();
@@ -51,82 +115,22 @@ public class LassoTool extends  ShapeTool {
             // toggle mode
             currentMode = LassoMode.DRAGGING;
 
-
         } else if (currentMode == LassoMode.DRAGGING) {
 
-            // add image draw op to stack
-            double relativeWidth = selectedSnapshot.getWidth() / canvas.getWidth();
-            double relativeHeight = selectedSnapshot.getHeight() / canvas.getHeight();
-            double relativeX = (e.getX() - deltaX) / canvas.getWidth();
-            double relativeY = (e.getY() - deltaY) / canvas.getHeight();
-            ImageDrawOperation imageDrawOperation = new ImageDrawOperation(selectedSnapshot, relativeX, relativeY, relativeWidth, relativeHeight);
+            // add image draw operation to lasso operation
+            ImageDrawOperation imageDrawOperation = createImageDrawOperation(e, graphicsContext);
             lassoOperation.setImageDrawOperation(imageDrawOperation);
 
             canvas.drawImageOnCanvas();
             canvas.reDraw();
-            imageDrawOperation.draw(graphicsContext);
-            //graphicsContext.drawImage(selectedSnapshot, e.getX(), e.getY(), relativeWidth * canvas.getWidth(), relativeHeight *canvas.getHeight());
 
+            // toggle mode
             currentMode = LassoMode.SELECTION;
-
-        }
-
-
-
-    }
-
-    @Override
-    public void onDrag(MouseEvent e, GraphicsContext graphicsContext) {
-        calculateRelativeShapeParameters(e.getX(), e.getY(), graphicsContext);
-        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
-
-        if (currentMode == LassoMode.SELECTION) {
-            // draw dashed rect
-            ShapeDrawOperation operation = createShapeOperation(graphicsContext);
-            canvas.drawImageOnCanvas();
-            canvas.reDraw();
-            operation.draw(graphicsContext);
-        } else if (currentMode == LassoMode.DRAGGING) {
-            // clear space from selected snapshot
-            canvas.drawImageOnCanvas();
-            canvas.reDraw();
-
-            // redraw snapshot on canvas in new location
-            double localX = e.getX() - deltaX;
-            double localY = e.getY() - deltaY;
-            graphicsContext.drawImage(selectedSnapshot, localX, localY);
-        }
-
-
-    }
-
-    @Override
-    public void onMousePressed(MouseEvent e, GraphicsContext graphicsContext) {
-
-        if (currentMode == LassoMode.SELECTION) {
-            startX = e.getX();
-            startY = e.getY();
-
-        } else if (currentMode == LassoMode.DRAGGING) {
-            PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
-            deltaX = e.getX() - (relativeTopLeftX * canvas.getWidth());
-            deltaY = e.getY() - (relativeTopLeftY * canvas.getHeight());
-
-            if (deltaX < 0 || deltaY < 0) {
-                // clicked outside of prior selection, select again
-                startX = e.getX();
-                startY = e.getY();
-                currentMode = LassoMode.SELECTION;
-            } else {
-                // clicked inside selection
-                // start drag process
-                canvas.pushToUndoStack(lassoOperation);
-                canvas.drawImageOnCanvas();
-                canvas.reDraw();
-            }
         }
     }
 
+
+    // creates the dashed rectangle shape for the selection box
     @Override
     protected ShapeDrawOperation createShapeOperation(GraphicsContext graphicsContext) {
         Paint strokeColor = graphicsContext.getStroke();
@@ -136,23 +140,51 @@ public class LassoTool extends  ShapeTool {
         return rectOp;
     }
 
+    // operation to draw the snapshot after it has been moved
+    private ImageDrawOperation createImageDrawOperation(MouseEvent e, GraphicsContext graphicsContext) {
+        PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
+        double relativeSnapshotWidth = selectedSnapshot.getWidth() / canvas.getWidth();
+        double relativeSnapshotHeight = selectedSnapshot.getHeight() / canvas.getHeight();
+        double relativeX = (e.getX() - deltaX) / canvas.getWidth();
+        double relativeY = (e.getY() - deltaY) / canvas.getHeight();
+        return new ImageDrawOperation(selectedSnapshot, relativeX, relativeY, relativeSnapshotWidth, relativeSnapshotHeight);
+    }
+
     // return the 2d rectangle the user has selected, translated into the parent node's coordinate space
     // used as the viewport for snapshot
     protected Rectangle2D getViewportRect(GraphicsContext graphicsContext) {
-        double canvasWidth = graphicsContext.getCanvas().getWidth();
-        double canvasHeight = graphicsContext.getCanvas().getHeight();
         Bounds canvasBoundsInParent = graphicsContext.getCanvas().getBoundsInParent();
 
-        double scaledWidth = relativeWidth * canvasWidth;
-        double scaledHeight = relativeHeight * canvasHeight;
-
-        double localTopLeftX = relativeTopLeftX * canvasWidth;
-        double localTopLeftY = relativeTopLeftY * canvasHeight;
-
         // viewport requires coordinates in the parent node's coordinate space
-        double topLeftXInParent = localTopLeftX + canvasBoundsInParent.getMinX();
-        double topLeftYInParent = localTopLeftY + canvasBoundsInParent.getMinY();
+        double topLeftXInParent = topLeftX + canvasBoundsInParent.getMinX();
+        double topLeftYInParent = topLeftY + canvasBoundsInParent.getMinY();
 
-        return new Rectangle2D(topLeftXInParent, topLeftYInParent, scaledWidth, scaledHeight);
+        return new Rectangle2D(topLeftXInParent, topLeftYInParent, width, height);
+    }
+
+    // calculate the parameters used to draw rectangles, squares, ovals, circles, etc
+    // pass in co-ords from where the user released the mouse
+    protected void calculateAbsoluteShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
+        // calculate where the top left corner of the shape should be
+        double xDifference = endX - startX;
+        double yDifference = endY - startY;
+        double x = (xDifference > 0) ? startX : endX;
+        double y = (yDifference > 0) ? startY : endY;
+        topLeftX = x;
+        topLeftY = y;
+
+        // calculate side lengths
+        width = Math.abs(endX - startX);
+        height = Math.abs(endY - startY);
+    }
+
+    // draw the selected snapshot on canvas at the current position (during dragging)
+    private void drawTempImage(MouseEvent e, GraphicsContext graphicsContext) {
+        // redraw snapshot on canvas in new location
+        if (selectedSnapshot != null) {
+            double localX = e.getX() - deltaX;
+            double localY = e.getY() - deltaY;
+            graphicsContext.drawImage(selectedSnapshot, localX, localY);
+        }
     }
 }
