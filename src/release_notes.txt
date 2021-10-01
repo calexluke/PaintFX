@@ -1,3 +1,23 @@
+PaintFX Version 1.3.0 10/1/2021
+
+New Features:
+	•	User can undo/redo draw operations using the menu or cmd+z (undo) or shift+cmd+z (redo)
+	•	User can draw rounded rectangles and regular polygons with 3 - 13 sides
+	•	Added Eraser tool
+	•	User can "live draw" and see the a live preview of the line or shape they are drawing
+	•	Lasso tool allows user to select a piece of the image and drag it to a new location
+
+Known Issues:
+	•	There is some weirdness with transparency left behind under moved portions of the image
+	•	Repeated snapshots/selections of the same part of the image can result in gradual loss of resolution (xerox effect)
+
+Expected Next Sprint:
+	•	crop
+	•	performance improvement for live draw
+
+Links:
+	•	https://github.com/calexluke/PaintFX
+
 PaintFX Version 1.2.0 09/24/2021
 
 New Features:
