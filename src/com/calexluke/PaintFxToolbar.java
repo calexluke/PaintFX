@@ -3,6 +3,8 @@ package com.calexluke;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -72,24 +74,42 @@ public class PaintFxToolbar extends ToolBar {
         polygonSlider.valueProperty().addListener((options, oldValue, newValue) -> stateManager.setSelectedPolygonSides((int)polygonSlider.getValue()));
     }
 
+    private ImageView getButtonIcon(String filepath) {
+        ImageManager imageManager = new ImageManager();
+        Image buttonImage = imageManager.getImageFromAssets(filepath);
+        ImageView buttonImageView = new ImageView(buttonImage);
+        buttonImageView.setPreserveRatio(true);
+        buttonImageView.setFitHeight(20);
+        return buttonImageView;
+    }
+
     private void configureToggleButtons() {
         // toggle group allows selection of only one button at a time
         ToggleGroup toggleGroup = new ToggleGroup();
-        ToggleButton mouseButton = new ToggleButton("Mouse");
-        ToggleButton pencilButton = new ToggleButton("Pencil");
-        ToggleButton eraseButton = new ToggleButton("Eraser");
-        ToggleButton lineButton = new ToggleButton("Line");
-        ToggleButton shapeToolButton = new ToggleButton("Shape");
-        ToggleButton textButton = new ToggleButton("Text");
-        ToggleButton lassoButton = new ToggleButton("Lasso");
-        ToggleButton colorGrabButton = new ToggleButton("Grab Color");
+        ToggleButton mouseButton = new ToggleButton();
+        ToggleButton pencilButton = new ToggleButton();
+        ToggleButton eraseButton = new ToggleButton();
+        ToggleButton lineButton = new ToggleButton();
+        ToggleButton shapeToolButton = new ToggleButton();
+        ToggleButton textButton = new ToggleButton();
+        ToggleButton lassoButton = new ToggleButton();
+        ToggleButton colorGrabButton = new ToggleButton();
+
+        // set icons
+        mouseButton.setGraphic(getButtonIcon(Constants.CURSOR_ICON_PATH));
+        pencilButton.setGraphic(getButtonIcon(Constants.PENCIL_ICON_PATH));
+        eraseButton.setGraphic(getButtonIcon(Constants.ERASER_ICON_PATH));
+        lineButton.setGraphic(getButtonIcon(Constants.LINE_ICON_PATH));
+        shapeToolButton.setGraphic(getButtonIcon(Constants.SHAPE_ICON_PATH));
+        textButton.setGraphic(getButtonIcon(Constants.TEXT_ICON_PATH));
+        lassoButton.setGraphic(getButtonIcon(Constants.LASSO_ICON_PATH));
+        colorGrabButton.setGraphic(getButtonIcon(Constants.COLOR_GRAB_ICON_PATH));
 
         // all buttons will be the width of the VBox
         mouseButton.setMaxWidth(Double.MAX_VALUE);
         pencilButton.setMaxWidth(Double.MAX_VALUE);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
         lineButton.setMaxWidth(Double.MAX_VALUE);
-
         shapeToolButton.setMaxWidth(Double.MAX_VALUE);
         colorGrabButton.setMaxWidth(Double.MAX_VALUE);
         textButton.setMaxWidth(Double.MAX_VALUE);

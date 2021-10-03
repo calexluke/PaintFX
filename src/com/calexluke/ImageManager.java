@@ -1,7 +1,6 @@
 package com.calexluke;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.*;
 import javafx.scene.paint.Color;
@@ -14,7 +13,7 @@ import java.io.FileNotFoundException;
 public class ImageManager {
 
     public Image getLogoImage() {
-        return getImageFromAssets(Constants.logoImageFilePath);
+        return getImageFromAssets(Constants.LOGO_IMAGE_PATH);
     }
 
     // create Image object from image file in assets folder

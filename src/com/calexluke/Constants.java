@@ -2,11 +2,25 @@ package com.calexluke;
 
 public class Constants {
 
-    static public String logoImageFilePath = "/com/calexluke/Assets/PAIN(t).png";
+    static public String ASSETS_FILE_PATH = "/com/calexluke/Assets/";
+
+    static public String LOGO_IMAGE_PATH = ASSETS_FILE_PATH + "PAIN(t).png";
+
+    // open source icons from https://www.flaticon.com/
+    static public String CURSOR_ICON_PATH = ASSETS_FILE_PATH + "cursor.png";
+    static public String PENCIL_ICON_PATH = ASSETS_FILE_PATH + "pencil.png";
+    static public String ERASER_ICON_PATH = ASSETS_FILE_PATH + "double-sided-eraser.png";
+    static public String LINE_ICON_PATH = ASSETS_FILE_PATH + "diagonal-line.png";
+    static public String SHAPE_ICON_PATH = ASSETS_FILE_PATH + "shapes.png";
+    static public String TEXT_ICON_PATH = ASSETS_FILE_PATH + "font.png";
+    static public String LASSO_ICON_PATH = ASSETS_FILE_PATH + "selection.png";
+    static public String COLOR_GRAB_ICON_PATH = ASSETS_FILE_PATH + "color-picker.png";
+
     static public int defaultSceneHeight = 1000;
     static public int defaultSceneWidth = 1000;
     static public int imageInsetValue = 40;
     static public int DEFAULT_FONT_SIZE = 20;
+
     static public String TIMER_PREFS_KEY = "timerValue";
 
     static public String SQUARE_SHAPE = "Square";
