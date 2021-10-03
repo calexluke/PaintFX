@@ -11,6 +11,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.prefs.Preferences;
 
 
 /*
@@ -37,12 +38,14 @@ public class StateManager {
     private Boolean hasUnsavedChanges;
     private int selectedTabIndex;
     private HashMap<Integer, String> saveAsFilePathMap;
+    private Preferences preferences;
 
     public IntegerProperty autoSaveCounter;
-    private int autoSaveCounterMax = 122;
+    private int autoSaveCounterMax;
 
     public StateManager() {
         ImageManager imageManager = new ImageManager();
+        preferences = Preferences.userRoot().node(this.getClass().getName());
         selectedTool = new MouseTool();
         selectedStrokeWidth = StrokeWidth.THIN;
         strokeColor = Color.BLACK;
@@ -52,6 +55,8 @@ public class StateManager {
         autoSaveImagesMap = new HashMap<>();
         selectedTabIndex = 0;
         selectedPolygonSides = 5;
+
+        autoSaveCounterMax = getCounterValueFromPreferences();
         autoSaveCounter = new SimpleIntegerProperty();
         autoSaveCounter.setValue(autoSaveCounterMax);
 
@@ -95,6 +100,7 @@ public class StateManager {
     public void setAutoSaveCounterMax(int newValue) {
         autoSaveCounterMax = newValue;
         autoSaveCounter.setValue(autoSaveCounterMax);
+        saveCounterToPreferences();
     }
     public final void setAutoSaveCounter(int value) { autoSaveCounter.set(value); }
 
@@ -127,8 +133,10 @@ public class StateManager {
     }
     public int getSelectedTabIndex() { return  selectedTabIndex; }
     public final int getAutoSaveCounter() { return autoSaveCounter.get(); }
+    public int getAutoSaveCounterMax() { return autoSaveCounterMax; }
     public IntegerProperty autoSaveCounterProperty() { return autoSaveCounter; }
 
+//region Timer
 
     private void configureTimer() {
         // decrement counter every 1 second
@@ -146,4 +154,15 @@ public class StateManager {
             setAutoSaveCounter(autoSaveCounter.getValue() - 1);
         }
     }
+
+    private void saveCounterToPreferences() {
+        preferences.putInt(Constants.TIMER_PREFS_KEY, autoSaveCounterMax);
+    }
+
+    private int getCounterValueFromPreferences() {
+        // returns 120 if preference not defined
+        return preferences.getInt(Constants.TIMER_PREFS_KEY, 120);
+    }
+
+    //endregion
 }

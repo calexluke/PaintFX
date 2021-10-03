@@ -215,10 +215,11 @@ public class PaintFxToolbar extends ToolBar {
     }
 
     private void configureTimerSlider() {
+        int startingValue = stateManager.getAutoSaveCounterMax() / 60;
         timerSlider = new Slider();
         timerSlider.setMin(2);
         timerSlider.setMax(5);
-        timerSlider.setValue(2);
+        timerSlider.setValue(startingValue);
         timerSlider.setMajorTickUnit(.5);
         timerSlider.setMinorTickCount(0);
         timerSlider.setShowTickLabels(true);
