@@ -1,7 +1,9 @@
 package com.calexluke;
 
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -12,6 +14,12 @@ public class PaintFxToolbar extends ToolBar {
     private ColorPicker strokeColorPicker;
     private ColorPicker fillColorPicker;
     private Slider polygonSlider;
+    private Slider timerSlider;
+    private HBox timerLabelHBox;
+    private Label timerLabel;
+    private Label autoSaveLabel;
+    private boolean timerLabelHidden = false;
+
 
     public PaintFxToolbar(StateManager stateManager) {
         super();
@@ -25,6 +33,8 @@ public class PaintFxToolbar extends ToolBar {
         configureToggleButtons();
         configureComboBox();
         configureColorPickers();
+        configureTimerSection();
+        configureTimerListener();
     }
 
     private void configurePolygonSlider() {
@@ -164,4 +174,85 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(new Label("Fill Color"));
         toolVbox.getChildren().add(fillColorPicker);
     }
+
+    //region Timer stuff
+
+    private void configureTimerSection() {
+        autoSaveLabel = new Label("Auto-Save in:    ");
+        timerLabel = new Label(getTimerString());
+        timerLabelHBox = new HBox();
+        timerLabelHBox.setMaxWidth(Double.MAX_VALUE);
+        timerLabelHBox.setAlignment(Pos.CENTER);
+        timerLabelHBox.getChildren().add(autoSaveLabel);
+        timerLabelHBox.getChildren().add(timerLabel);
+        configureTimerSlider();
+
+        Button showHideButton = new Button("Show/Hide Timer");
+        showHideButton.setMaxWidth(Double.MAX_VALUE);
+        showHideButton.setOnAction(e -> toggleTimerLabelHidden());
+
+        toolVbox.getChildren().add(new Label(""));
+        toolVbox.getChildren().add(timerLabelHBox);
+        toolVbox.getChildren().add(timerSlider);
+        toolVbox.getChildren().add(showHideButton);
+    }
+
+    private void toggleTimerLabelHidden() {
+        timerLabelHBox.getChildren().remove(autoSaveLabel);
+        timerLabelHBox.getChildren().remove(timerLabel);
+
+        // toggle value
+        timerLabelHidden = !timerLabelHidden;
+
+        // act on new value
+        if (timerLabelHidden) {
+            // add spacer label
+            timerLabelHBox.getChildren().add(new Label(""));
+        } else {
+            timerLabelHBox.getChildren().add(autoSaveLabel);
+            timerLabelHBox.getChildren().add(timerLabel);
+        }
+    }
+
+    private void configureTimerSlider() {
+        timerSlider = new Slider();
+        timerSlider.setMin(2);
+        timerSlider.setMax(5);
+        timerSlider.setValue(2);
+        timerSlider.setMajorTickUnit(.5);
+        timerSlider.setMinorTickCount(0);
+        timerSlider.setShowTickLabels(true);
+        timerSlider.setShowTickMarks(true);
+        timerSlider.setSnapToTicks(true);
+
+        // update timer after selection is done
+        timerSlider.setOnMouseReleased(event -> {
+            System.out.println("User selected " + timerSlider.getValue());
+            int seconds = (int)(timerSlider.getValue() * 60);
+            stateManager.setAutoSaveCounterMax(seconds);
+        });
+    }
+
+    private void configureTimerListener() {
+        stateManager.autoSaveCounterProperty().addListener((o, oldValue, newValue) -> {
+            //System.out.println("Counter changed! New value: " + newValue);
+            timerLabel.setText(getTimerString());
+        });
+    }
+
+    private String getTimerString() {
+        int counter = stateManager.getAutoSaveCounter();
+        int remainder = counter % 60;
+        int minutes = counter / 60;
+        String minuteString = String.valueOf(minutes);
+        String secondsString;
+        if (remainder >= 10) {
+            secondsString = String.valueOf(remainder);
+        } else {
+            secondsString = "0" + remainder;
+        }
+        return minuteString + ":" + secondsString;
+    }
+
+    //endregion
 }

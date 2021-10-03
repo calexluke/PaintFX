@@ -62,6 +62,7 @@ public class Main extends Application {
         configureToolBar();
         configureScrollBars();
         configureKeyboardListeners();
+        configureTimerListener();
 
         // add listener to track changes in scene size
         ChangeListener<Number> sceneSizeListener = (observable, oldValue, newValue) -> scaleBorderPaneToSceneSize();
@@ -78,6 +79,7 @@ public class Main extends Application {
 
         displayMainImageInCurrentTab();
         scaleBorderPaneToSceneSize();
+
     }
 
     public static void main(String[] args) {
@@ -199,6 +201,7 @@ public class Main extends Application {
         Menu fileMenu = new Menu("File");
 
         MenuItem load = new MenuItem("Load New Image");
+        MenuItem loadAutoSave = new MenuItem("Load Auto-Saved Image");
         MenuItem loadInNewTab = new MenuItem("Load Image In New Tab");
         MenuItem saveAs = new MenuItem("Save As");
         MenuItem save = new MenuItem("Save");
@@ -207,7 +210,9 @@ public class Main extends Application {
         MenuItem redo = new MenuItem("Redo");
 
 
+
         load.setOnAction(e -> selectNewImageForCurrentTab());
+        loadAutoSave.setOnAction(e -> loadAutoSavedImageInCurrentTab());
         restore.setOnAction(e -> displayDefaultLogoImageInCurrentTab());
         // take snapshot of canvas, send to fileManager to save
         saveAs.setOnAction(e -> fileManager.saveImageAs(imageManager.getSnapshotImageToSave(getCurrentCanvas())));
@@ -225,6 +230,7 @@ public class Main extends Application {
         fileMenu.getItems().add(save);
         fileMenu.getItems().add(saveAs);
         fileMenu.getItems().add(load);
+        fileMenu.getItems().add(loadAutoSave);
         fileMenu.getItems().add(loadInNewTab);
         fileMenu.getItems().add(undo);
         fileMenu.getItems().add(redo);
@@ -300,6 +306,15 @@ public class Main extends Application {
         });
     }
 
+    private void configureTimerListener() {
+        stateManager.autoSaveCounterProperty().addListener((o, oldValue, newValue) -> {
+            if (newValue.equals(0)) {
+                System.out.println("Auto-saving image");
+                stateManager.setAutoSaveImageForCurrentTab(imageManager.getSnapshotImageToSave(getCurrentCanvas()));
+            }
+        });
+    }
+
     //endregion
 
     //region Image Selection and Display
@@ -314,6 +329,14 @@ public class Main extends Application {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void loadAutoSavedImageInCurrentTab() {
+        Image autoSavedImage = stateManager.getAutoSaveImageForCurrentTab();
+        if (autoSavedImage != null) {
+            stateManager.setMainImageInCurrentTab(autoSavedImage);
+            displayMainImageInCurrentTab();
         }
     }
 
