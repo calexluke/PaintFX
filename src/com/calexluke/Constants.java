@@ -20,6 +20,7 @@ public class Constants {
     static public int defaultSceneWidth = 1000;
     static public int imageInsetValue = 40;
     static public int DEFAULT_FONT_SIZE = 20;
+    static public int DEFAULT_ICON_HEIGHT = 25;
 
     static public String TIMER_PREFS_KEY = "timerValue";
 

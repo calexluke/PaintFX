@@ -8,7 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
 import java.util.HashMap;
 
 public class PaintFxToolbar extends ToolBar {
@@ -18,7 +17,6 @@ public class PaintFxToolbar extends ToolBar {
     private ColorPicker strokeColorPicker;
     private ColorPicker fillColorPicker;
     private Slider polygonSlider;
-
     private Slider timerSlider;
     private HBox timerLabelHBox;
     private Label timerLabel;
@@ -51,6 +49,7 @@ public class PaintFxToolbar extends ToolBar {
         selectedShapeTool = shapeToolsMap.get(shapeToolComboBox.getValue());
     }
 
+    // For selection of shape drawing tool object with string key from Constants
     private void configureShapeToolMap() {
         shapeToolsMap = new HashMap<>();
         shapeToolsMap.put(Constants.SQUARE_SHAPE, new SquareTool());
@@ -79,7 +78,7 @@ public class PaintFxToolbar extends ToolBar {
         Image buttonImage = imageManager.getImageFromAssets(filepath);
         ImageView buttonImageView = new ImageView(buttonImage);
         buttonImageView.setPreserveRatio(true);
-        buttonImageView.setFitHeight(20);
+        buttonImageView.setFitHeight(Constants.DEFAULT_ICON_HEIGHT);
         return buttonImageView;
     }
 
@@ -105,6 +104,16 @@ public class PaintFxToolbar extends ToolBar {
         lassoButton.setGraphic(getButtonIcon(Constants.LASSO_ICON_PATH));
         colorGrabButton.setGraphic(getButtonIcon(Constants.COLOR_GRAB_ICON_PATH));
 
+        // set tooltips
+        mouseButton.setTooltip(new Tooltip("Mouse Tool (default)"));
+        pencilButton.setTooltip(new Tooltip("Pencil Tool"));
+        eraseButton.setTooltip(new Tooltip("Eraser Tool"));
+        lineButton.setTooltip(new Tooltip("Line Tool"));
+        shapeToolButton.setTooltip(new Tooltip("Shape Tool"));
+        textButton.setTooltip(new Tooltip("Text Tool"));
+        lassoButton.setTooltip(new Tooltip("Select and Drag Tool"));
+        colorGrabButton.setTooltip(new Tooltip("Color Grab Tool"));
+
         // all buttons will be the width of the VBox
         mouseButton.setMaxWidth(Double.MAX_VALUE);
         pencilButton.setMaxWidth(Double.MAX_VALUE);
@@ -115,16 +124,17 @@ public class PaintFxToolbar extends ToolBar {
         textButton.setMaxWidth(Double.MAX_VALUE);
         lassoButton.setMaxWidth(Double.MAX_VALUE);
 
+        // set button actions
         mouseButton.setOnAction(e -> stateManager.setSelectedTool(new MouseTool()));
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
         eraseButton.setOnAction(e -> stateManager.setSelectedTool(new EraserTool()));
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
-
         shapeToolButton.setOnAction(e -> stateManager.setSelectedTool(selectedShapeTool));
         textButton.setOnAction(e -> stateManager.setSelectedTool(new TextTool()));
         lassoButton.setOnAction(e -> stateManager.setSelectedTool(new LassoTool()));
         colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
 
+        // add to toggle group
         toggleGroup.getToggles().add(mouseButton);
         toggleGroup.getToggles().add(pencilButton);
         toggleGroup.getToggles().add(eraseButton);
@@ -134,22 +144,22 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(lassoButton);
         toggleGroup.getToggles().add(colorGrabButton);
 
+        // layout in vbox
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(mouseButton);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(pencilButton);
-        toolVbox.getChildren().add(eraseButton);
         toolVbox.getChildren().add(lineButton);
-        toolVbox.getChildren().add(new Label(" "));
+        toolVbox.getChildren().add(eraseButton);
         toolVbox.getChildren().add(shapeToolButton);
         toolVbox.getChildren().add(shapeToolComboBox);
-        toolVbox.getChildren().add(new Label("Polygon sides:"));
-        toolVbox.getChildren().add(polygonSlider);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(textButton);
         toolVbox.getChildren().add(lassoButton);
         toolVbox.getChildren().add(colorGrabButton);
         toolVbox.getChildren().add(new Label(" "));
+        toolVbox.getChildren().add(getCenteredTextLabel("Polygon sides"));
+        toolVbox.getChildren().add(polygonSlider);
     }
 
     private void configureShapeToolComboBox() {
@@ -181,7 +191,7 @@ public class PaintFxToolbar extends ToolBar {
         strokeWidthComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             stateManager.setSelectedStrokeWidth((StateManager.StrokeWidth) newValue);
         });
-        toolVbox.getChildren().add(new Label("Stroke Width"));
+        toolVbox.getChildren().add(getCenteredTextLabel("Stroke Width"));
         toolVbox.getChildren().add(strokeWidthComboBox);
     }
 
@@ -207,11 +217,19 @@ public class PaintFxToolbar extends ToolBar {
             stateManager.setFillColor(chosenColor);
         });
 
-        toolVbox.getChildren().add(new Label("Stroke Color"));
+        toolVbox.getChildren().add(getCenteredTextLabel("Stroke Color"));
         toolVbox.getChildren().add(strokeColorPicker);
 
-        toolVbox.getChildren().add(new Label("Fill Color"));
+        toolVbox.getChildren().add(getCenteredTextLabel("Fill Color"));
         toolVbox.getChildren().add(fillColorPicker);
+    }
+
+    private HBox getCenteredTextLabel(String text) {
+        HBox textBox = new HBox();
+        textBox.setMaxWidth(Double.MAX_VALUE);
+        textBox.setAlignment(Pos.CENTER);
+        textBox.getChildren().add(new Label(text));
+        return  textBox;
     }
 
     //region Timer stuff
@@ -275,7 +293,6 @@ public class PaintFxToolbar extends ToolBar {
 
     private void configureTimerListener() {
         stateManager.autoSaveCounterProperty().addListener((o, oldValue, newValue) -> {
-            //System.out.println("Counter changed! New value: " + newValue);
             timerLabel.setText(getTimerString());
         });
     }
@@ -285,12 +302,7 @@ public class PaintFxToolbar extends ToolBar {
         int remainder = counter % 60;
         int minutes = counter / 60;
         String minuteString = String.valueOf(minutes);
-        String secondsString;
-        if (remainder >= 10) {
-            secondsString = String.valueOf(remainder);
-        } else {
-            secondsString = "0" + remainder;
-        }
+        String secondsString = (remainder < 10) ? ("0" + remainder) : String.valueOf(remainder);
         return minuteString + ":" + secondsString;
     }
 
