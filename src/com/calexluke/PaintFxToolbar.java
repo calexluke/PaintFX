@@ -7,6 +7,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
+import java.util.HashMap;
+
 public class PaintFxToolbar extends ToolBar {
 
     private StateManager stateManager;
@@ -14,11 +16,16 @@ public class PaintFxToolbar extends ToolBar {
     private ColorPicker strokeColorPicker;
     private ColorPicker fillColorPicker;
     private Slider polygonSlider;
+
     private Slider timerSlider;
     private HBox timerLabelHBox;
     private Label timerLabel;
     private Label autoSaveLabel;
     private boolean timerLabelHidden = false;
+
+    private ShapeTool selectedShapeTool;
+    private ComboBox shapeToolComboBox;
+    private HashMap<String, ShapeTool> shapeToolsMap;
 
 
     public PaintFxToolbar(StateManager stateManager) {
@@ -29,12 +36,27 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox = new VBox(5);
         this.getItems().add(toolVbox);
         this.setOrientation(Orientation.VERTICAL);
+        configureShapeToolMap();
         configurePolygonSlider();
+        configureShapeToolComboBox();
         configureToggleButtons();
-        configureComboBox();
+        configureStrokeWidthComboBox();
         configureColorPickers();
         configureTimerSection();
         configureTimerListener();
+
+        // initial value
+        selectedShapeTool = shapeToolsMap.get(shapeToolComboBox.getValue());
+    }
+
+    private void configureShapeToolMap() {
+        shapeToolsMap = new HashMap<>();
+        shapeToolsMap.put(Constants.SQUARE_SHAPE, new SquareTool());
+        shapeToolsMap.put(Constants.RECTANGLE_SHAPE, new RectTool());
+        shapeToolsMap.put(Constants.ROUNDED_RECT_SHAPE, new RoundedRectTool());
+        shapeToolsMap.put(Constants.CIRCLE_SHAPE, new CircleTool());
+        shapeToolsMap.put(Constants.OVAL_SHAPE, new OvalTool());
+        shapeToolsMap.put(Constants.POLYGON_SHAPE, new PolygonTool());
     }
 
     private void configurePolygonSlider() {
@@ -57,12 +79,7 @@ public class PaintFxToolbar extends ToolBar {
         ToggleButton pencilButton = new ToggleButton("Pencil");
         ToggleButton eraseButton = new ToggleButton("Eraser");
         ToggleButton lineButton = new ToggleButton("Line");
-        ToggleButton squareButton = new ToggleButton("Square");
-        ToggleButton rectButton = new ToggleButton("Rectangle");
-        ToggleButton roundedRectButton = new ToggleButton("Rounded Rectangle");
-        ToggleButton circleButton = new ToggleButton("Circle");
-        ToggleButton ovalButton = new ToggleButton("Oval");
-        ToggleButton polygonButton = new ToggleButton("Polygon");
+        ToggleButton shapeToolButton = new ToggleButton("Shape");
         ToggleButton textButton = new ToggleButton("Text");
         ToggleButton lassoButton = new ToggleButton("Lasso");
         ToggleButton colorGrabButton = new ToggleButton("Grab Color");
@@ -72,12 +89,8 @@ public class PaintFxToolbar extends ToolBar {
         pencilButton.setMaxWidth(Double.MAX_VALUE);
         eraseButton.setMaxWidth(Double.MAX_VALUE);
         lineButton.setMaxWidth(Double.MAX_VALUE);
-        squareButton.setMaxWidth(Double.MAX_VALUE);
-        rectButton.setMaxWidth(Double.MAX_VALUE);
-        roundedRectButton.setMaxWidth(Double.MAX_VALUE);
-        circleButton.setMaxWidth(Double.MAX_VALUE);
-        ovalButton.setMaxWidth(Double.MAX_VALUE);
-        polygonButton.setMaxWidth(Double.MAX_VALUE);
+
+        shapeToolButton.setMaxWidth(Double.MAX_VALUE);
         colorGrabButton.setMaxWidth(Double.MAX_VALUE);
         textButton.setMaxWidth(Double.MAX_VALUE);
         lassoButton.setMaxWidth(Double.MAX_VALUE);
@@ -86,12 +99,8 @@ public class PaintFxToolbar extends ToolBar {
         pencilButton.setOnAction(e -> stateManager.setSelectedTool(new PencilTool()));
         eraseButton.setOnAction(e -> stateManager.setSelectedTool(new EraserTool()));
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
-        squareButton.setOnAction(e -> stateManager.setSelectedTool(new SquareTool()));
-        rectButton.setOnAction(e -> stateManager.setSelectedTool(new RectTool()));
-        roundedRectButton.setOnAction(e -> stateManager.setSelectedTool(new RoundedRectTool()));
-        circleButton.setOnAction(e -> stateManager.setSelectedTool(new CircleTool()));
-        ovalButton.setOnAction(e -> stateManager.setSelectedTool(new OvalTool()));
-        polygonButton.setOnAction(e -> stateManager.setSelectedTool(new PolygonTool()));
+
+        shapeToolButton.setOnAction(e -> stateManager.setSelectedTool(selectedShapeTool));
         textButton.setOnAction(e -> stateManager.setSelectedTool(new TextTool()));
         lassoButton.setOnAction(e -> stateManager.setSelectedTool(new LassoTool()));
         colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
@@ -100,12 +109,7 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(pencilButton);
         toggleGroup.getToggles().add(eraseButton);
         toggleGroup.getToggles().add(lineButton);
-        toggleGroup.getToggles().add(squareButton);
-        toggleGroup.getToggles().add(rectButton);
-        toggleGroup.getToggles().add(roundedRectButton);
-        toggleGroup.getToggles().add(circleButton);
-        toggleGroup.getToggles().add(ovalButton);
-        toggleGroup.getToggles().add(polygonButton);
+        toggleGroup.getToggles().add(shapeToolButton);
         toggleGroup.getToggles().add(textButton);
         toggleGroup.getToggles().add(lassoButton);
         toggleGroup.getToggles().add(colorGrabButton);
@@ -117,13 +121,10 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(eraseButton);
         toolVbox.getChildren().add(lineButton);
         toolVbox.getChildren().add(new Label(" "));
-        toolVbox.getChildren().add(squareButton);
-        toolVbox.getChildren().add(rectButton);
-        toolVbox.getChildren().add(roundedRectButton);
-        toolVbox.getChildren().add(circleButton);
-        toolVbox.getChildren().add(ovalButton);
+        toolVbox.getChildren().add(shapeToolButton);
+        toolVbox.getChildren().add(shapeToolComboBox);
+        toolVbox.getChildren().add(new Label("Polygon sides:"));
         toolVbox.getChildren().add(polygonSlider);
-        toolVbox.getChildren().add(polygonButton);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(textButton);
         toolVbox.getChildren().add(lassoButton);
@@ -131,7 +132,25 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(new Label(" "));
     }
 
-    private void configureComboBox() {
+    private void configureShapeToolComboBox() {
+        shapeToolComboBox = new ComboBox<String>();
+        shapeToolComboBox.setMaxWidth(Double.MAX_VALUE);
+        shapeToolComboBox.getItems().addAll (
+                Constants.SQUARE_SHAPE,
+                Constants.RECTANGLE_SHAPE,
+                Constants.ROUNDED_RECT_SHAPE,
+                Constants.CIRCLE_SHAPE,
+                Constants.OVAL_SHAPE,
+                Constants.POLYGON_SHAPE
+        );
+        shapeToolComboBox.setValue(Constants.SQUARE_SHAPE);
+        shapeToolComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            selectedShapeTool = shapeToolsMap.get(newValue);
+            stateManager.setSelectedTool(selectedShapeTool);
+        });
+    }
+
+    private void configureStrokeWidthComboBox() {
         ComboBox strokeWidthComboBox = new ComboBox();
         strokeWidthComboBox.setMaxWidth(Double.MAX_VALUE);
         strokeWidthComboBox.getItems().addAll (

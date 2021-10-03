@@ -9,6 +9,13 @@ public class Constants {
     static public int DEFAULT_FONT_SIZE = 20;
     static public String TIMER_PREFS_KEY = "timerValue";
 
+    static public String SQUARE_SHAPE = "Square";
+    static public String RECTANGLE_SHAPE = "Rectangle";
+    static public String ROUNDED_RECT_SHAPE = "Rounded Rectangle";
+    static public String CIRCLE_SHAPE = "Circle";
+    static public String OVAL_SHAPE = "Oval";
+    static public String POLYGON_SHAPE = "Polygon";
+
     static public String aboutAlertTitle = "About Pain(t)";
     static public String helpAlertTitle = "How to Use";
 
