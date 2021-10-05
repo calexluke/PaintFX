@@ -31,6 +31,10 @@ public class PaintFxToolbar extends ToolBar {
     public PaintFxToolbar(StateManager stateManager) {
         super();
         this.stateManager = stateManager;
+        init();
+    }
+
+    private void init() {
         // container for toolbar elements
         // constructor param is default space between elements
         toolVbox = new VBox(5);
@@ -236,7 +240,7 @@ public class PaintFxToolbar extends ToolBar {
 
     private void configureTimerSection() {
         autoSaveLabel = new Label("Auto-Save in:    ");
-        timerLabel = new Label(getTimerString());
+        timerLabel = new Label(getTimerString(stateManager.getAutoSaveCounter()));
         timerLabelHBox = new HBox();
         timerLabelHBox.setMaxWidth(Double.MAX_VALUE);
         timerLabelHBox.setAlignment(Pos.CENTER);
@@ -293,12 +297,11 @@ public class PaintFxToolbar extends ToolBar {
 
     private void configureTimerListener() {
         stateManager.autoSaveCounterProperty().addListener((o, oldValue, newValue) -> {
-            timerLabel.setText(getTimerString());
+            timerLabel.setText(getTimerString(stateManager.getAutoSaveCounter()));
         });
     }
 
-    private String getTimerString() {
-        int counter = stateManager.getAutoSaveCounter();
+    public String getTimerString(int counter) {
         int remainder = counter % 60;
         int minutes = counter / 60;
         String minuteString = String.valueOf(minutes);

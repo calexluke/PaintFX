@@ -24,9 +24,9 @@ public class Main extends Application {
     private TabPane tabPane;
     private Scene scene;
 
-    private FileManager fileManager;
-    private ImageManager imageManager;
-    private StateManager stateManager;
+    public FileManager fileManager;
+    public ImageManager imageManager;
+    public StateManager stateManager;
 
     private PaintFxScrollBar horizontalScrollBar;
     private PaintFxScrollBar verticalScrollBar;
