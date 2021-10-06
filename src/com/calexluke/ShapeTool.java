@@ -53,9 +53,15 @@ public abstract class ShapeTool extends PaintFxTool {
         operation.draw(graphicsContext);
     }
 
-    // calculate the parameters used to draw rectangles, squares, ovals, circles, etc
-    // pass in co-ords from where the user released the mouse
-    // These values are relative the current size of canvas, so can be re-drawn at other scales in ShapeDrawOperations
+    /**
+     * Calculate the parameters used to draw rectangles, squares, ovals, circles, etc.
+     * Pass in co-ords from where the user released the mouse
+     * These values are relative the current size of canvas, so can be re-drawn at other scales in ShapeDrawOperations
+     *
+     * @param endX double
+     * @param endY double
+     * @param graphicsContext GraphicsContext
+     */
     protected void calculateRelativeShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
         double canvasWidth = graphicsContext.getCanvas().getWidth();
         double canvasHeight = graphicsContext.getCanvas().getHeight();

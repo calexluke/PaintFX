@@ -150,8 +150,12 @@ public class LassoTool extends  ShapeTool {
         return new ImageDrawOperation(selectedSnapshot, relativeX, relativeY, relativeSnapshotWidth, relativeSnapshotHeight);
     }
 
-    // return the 2d rectangle the user has selected, translated into the parent node's coordinate space
-    // used as the viewport for snapshot
+    /**
+     * Returns the 2d rectangle the user has selected, translated into the parent node's coordinate space.
+     * Used as the viewport for snapshot
+     * @param graphicsContext GraphicsContext
+     * @return Rectangle2D
+     */
     protected Rectangle2D getViewportRect(GraphicsContext graphicsContext) {
         Bounds canvasBoundsInParent = graphicsContext.getCanvas().getBoundsInParent();
 
@@ -162,8 +166,13 @@ public class LassoTool extends  ShapeTool {
         return new Rectangle2D(topLeftXInParent, topLeftYInParent, width, height);
     }
 
-    // calculate the parameters used to draw rectangles, squares, ovals, circles, etc
-    // pass in co-ords from where the user released the mouse
+    /**
+     *   Calculate the parameters used to draw rectangles, squares, ovals, circles, etc.
+     *   Pass in co-ords from where the user released the mouse.
+     * @param endX double
+     * @param endY double
+     * @param graphicsContext GraphicsContext
+     */
     protected void calculateAbsoluteShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {
         // calculate where the top left corner of the shape should be
         double xDifference = endX - startX;
@@ -178,7 +187,11 @@ public class LassoTool extends  ShapeTool {
         height = Math.abs(endY - startY);
     }
 
-    // draw the selected snapshot on canvas at the current position (during dragging)
+    /**
+     * Draw the selected snapshot on canvas at the current position (during dragging)
+     * @param e MouseEvent
+     * @param graphicsContext GraphicsContext
+     */
     private void drawTempImage(MouseEvent e, GraphicsContext graphicsContext) {
         // redraw snapshot on canvas in new location
         if (selectedSnapshot != null) {

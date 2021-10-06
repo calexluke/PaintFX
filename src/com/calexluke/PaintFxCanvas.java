@@ -16,8 +16,10 @@ public class PaintFxCanvas extends Canvas {
     private StateManager stateManager;
     private ImageView imageView;
 
-    // This array stores each "operation"/drawing event done on the canvas. This can be used for undo/redo, as well as redrawing
-    // the canvas at a new scale after zoom in/zoom out
+    /**
+     * This array stores each "operation"/drawing event done on the canvas. This can be used for undo/redo, as well as redrawing
+     * the canvas at a new scale after zoom in/zoom out
+     */
     private ArrayList<DrawOperation> operations = new ArrayList<>();
     private ArrayList<DrawOperation> redoStack = new ArrayList<>();
 
@@ -44,7 +46,9 @@ public class PaintFxCanvas extends Canvas {
 
     //region Drawing
 
-    // called when canvas is rescaled to re-generate all the drawings at the new scale.
+    /**
+     * called when canvas is rescaled to re-generate all the drawings at the new scale.
+     */
     public void reDraw() {
         System.out.println("Redrawing operation stack: ");
         for (DrawOperation operation : operations) {

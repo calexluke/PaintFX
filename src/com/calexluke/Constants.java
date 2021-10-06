@@ -36,14 +36,17 @@ public class Constants {
 
     static public String helpAlertText = """
                                         
-                                        Select the pencil or line tools to draw on an image.
+                                        Select one of the drawing tools on the left to draw lines or shapes on the image.
+                                        Hover over any tool for more info.
                                         
                                         Choose the width and color of the line with the color
-                                        picker and combo box. 
+                                        picker and combo box, or the number of sides for the polygon tool.
                                         
                                         Image load and save options can be found in the File Menu.
+                                        Zoom and scale options are found in the view menu.
                                         
-                                        Use the view menu to adjust the size of the image in the frame. 
+                                        The program will auto-save every 2 minutes by default.
+                                        You can adjust this auto-save time with the slider at the bottom of the toolbar.
                                    
                                         """;
 

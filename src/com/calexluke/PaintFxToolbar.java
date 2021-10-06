@@ -77,6 +77,13 @@ public class PaintFxToolbar extends ToolBar {
         polygonSlider.valueProperty().addListener((options, oldValue, newValue) -> stateManager.setSelectedPolygonSides((int)polygonSlider.getValue()));
     }
 
+
+    /**
+     * Returns the specified icon image as an imageView sized to be placed in a button
+     *
+     * @param filepath String
+     * @return ImageView
+     */
     private ImageView getButtonIcon(String filepath) {
         ImageManager imageManager = new ImageManager();
         Image buttonImage = imageManager.getImageFromAssets(filepath);
