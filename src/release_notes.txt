@@ -1,3 +1,25 @@
+PaintFX Version 1.4.0 10/8/2021
+
+New Features:
+	•	The program auto-saves a temporary version of the image every 2 minutes by default
+	•	User can load the most recent auto-saved version of the image
+	•	User can adjust the time between auto-saves and whether the countdown timer label is visible, and the user preference is stored between runs of the program
+	•	Icons and tooltips added to tool buttons
+	•	Help menu popup is updated
+	•	Added unit tests
+	•	Added javadoc comments
+
+Known Issues:
+	•	There is some weirdness with transparency left behind under moved portions of the image
+	•	Repeated snapshots/selections of the same part of the image can result in gradual loss of resolution (xerox effect)
+
+Expected Next Sprint:
+	•	crop
+	•	performance improvement for live draw
+
+Links:
+	•	https://github.com/calexluke/PaintFX
+
 PaintFX Version 1.3.0 10/1/2021
 
 New Features:
