@@ -1,6 +1,8 @@
 package com.calexluke;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PaintFxLogger {
 
@@ -31,11 +33,18 @@ public class PaintFxLogger {
                 // print writer allows println syntax
                 PrintWriter out = new PrintWriter(bw))
             {
-                out.println(text);
+                String timeStamp = getCurrentTimeStamp();
+                out.println(timeStamp + " " + text);
             } catch (IOException e) {
                 System.out.println(e.getLocalizedMessage());
             }
         }).start();
 
+    }
+
+    private String getCurrentTimeStamp() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        return dtf.format(now);
     }
 }

@@ -104,6 +104,10 @@ public class FileManager {
                 }
             }
             stateManager.setHasUnsavedChanges(false);
+
+            PaintFxLogger logger = new PaintFxLogger();
+            logger.writeToLog("Image saved to " + filePath);
+
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
