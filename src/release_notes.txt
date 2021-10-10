@@ -1,3 +1,12 @@
+New features:
+
+- logging w/ threading
+- copy/paste (vs drag/drop)
+- indication of what tool is in use
+- invent a feature (crop)
+- more javadoc
+- fix bugs w/ writeup (text box, tab smart save, shape button selection w/ combo box)
+
 PaintFX Version 1.4.0 10/8/2021
 
 New Features:

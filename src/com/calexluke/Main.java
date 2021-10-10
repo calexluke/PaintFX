@@ -14,6 +14,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+
+import java.io.*;
 import java.util.Optional;
 
 
@@ -79,6 +81,11 @@ public class Main extends Application {
 
         displayMainImageInCurrentTab();
         scaleBorderPaneToSceneSize();
+
+        PaintFxLogger logger = new PaintFxLogger();
+        logger.clearLogFile();
+        logger.writeToLog("Test Log");
+        logger.writeToLog("A Second Test Log");
 
     }
 

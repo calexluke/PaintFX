@@ -154,7 +154,7 @@ public class LassoTool extends  ShapeTool {
      * Returns the 2d rectangle the user has selected, translated into the parent node's coordinate space.
      * Used as the viewport for snapshot
      * @param graphicsContext GraphicsContext
-     * @return Rectangle2D
+     * @return the rectangle representing the area the user has selected
      */
     protected Rectangle2D getViewportRect(GraphicsContext graphicsContext) {
         Bounds canvasBoundsInParent = graphicsContext.getCanvas().getBoundsInParent();
@@ -169,8 +169,8 @@ public class LassoTool extends  ShapeTool {
     /**
      *   Calculate the parameters used to draw rectangles, squares, ovals, circles, etc.
      *   Pass in co-ords from where the user released the mouse.
-     * @param endX double
-     * @param endY double
+     * @param endX double, x value where the mouse currently is
+     * @param endY double, y value where the mouse currently is
      * @param graphicsContext GraphicsContext
      */
     protected void calculateAbsoluteShapeParameters(double endX, double endY, GraphicsContext graphicsContext) {

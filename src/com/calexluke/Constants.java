@@ -3,6 +3,7 @@ package com.calexluke;
 public class Constants {
 
     static public String ASSETS_FILE_PATH = "/com/calexluke/Assets/";
+    static public String LOGS_FILE_PATH = "Logs/log.txt";
 
     static public String LOGO_IMAGE_PATH = ASSETS_FILE_PATH + "PAIN(t).png";
 
