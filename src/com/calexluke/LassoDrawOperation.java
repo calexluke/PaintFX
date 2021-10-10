@@ -14,18 +14,6 @@ public class LassoDrawOperation extends RectDrawOperation {
         super(x, y, width, height, 0, Color.TRANSPARENT, Color.TRANSPARENT);
     }
 
-    public void draw(GraphicsContext graphicsContext) {
-        scaleParamsToCanvasSize(graphicsContext);
-
-        // clear space from original selection
-        graphicsContext.clearRect(scaledX, scaledY, scaledWidth, scaledHeight);
-
-        // redraw image in new location
-        if (imageDrawOperation != null) {
-            imageDrawOperation.draw(graphicsContext);
-        }
-    }
-
     public void setImageDrawOperation(ImageDrawOperation operation) {
         imageDrawOperation = operation;
     }

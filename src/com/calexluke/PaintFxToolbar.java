@@ -61,6 +61,7 @@ public class PaintFxToolbar extends ToolBar {
 
         // initial value
         selectedShapeTool = shapeToolsMap.get(shapeToolComboBox.getValue());
+        selectedLassoTool = lassoToolsMap.get(lassoToolComboBox.getValue());
     }
 
     // For selection of shape drawing tool object with string key from Constants
@@ -77,9 +78,9 @@ public class PaintFxToolbar extends ToolBar {
     // For selection of shape drawing tool object with string key from Constants
     private void configureLassoToolMap() {
         lassoToolsMap = new HashMap<>();
-        lassoToolsMap.put(Constants.CUT_AND_DRAG, new LassoTool());
-        lassoToolsMap.put(Constants.COPY_AND_DRAG, new LassoTool());
-        lassoToolsMap.put(Constants.CROP, new LassoTool());
+        lassoToolsMap.put(Constants.CUT_AND_DRAG, new CutAndDragTool());
+        lassoToolsMap.put(Constants.COPY_AND_DRAG, new CopyAndDragTool());
+        lassoToolsMap.put(Constants.CROP, new CropTool());
     }
 
     private void configurePolygonSlider() {

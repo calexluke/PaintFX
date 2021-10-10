@@ -12,7 +12,7 @@ import javafx.scene.paint.Paint;
 // lasso tool does the following: displays dashed rect around user-selected area,
 // takes snapshot of image inside selected area,
 // user can drag and drop the snapshot from the selected area
-public class LassoTool extends  ShapeTool {
+abstract public class LassoTool extends  ShapeTool {
 
     private WritableImage selectedSnapshot;
     private LassoDrawOperation lassoOperation;
@@ -106,7 +106,7 @@ public class LassoTool extends  ShapeTool {
             selectedSnapshot = canvas.snapshot(parameters, null);
 
             // save the operation of clearing the space left by the snapshot, for later use in dragging mode
-            lassoOperation = new LassoDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight);
+            lassoOperation = createLassoDrawOperation();
 
             // redraw dashed rect
             ShapeDrawOperation dashedRectOperation = createShapeOperation(graphicsContext);
@@ -128,6 +128,8 @@ public class LassoTool extends  ShapeTool {
             currentMode = LassoMode.SELECTION;
         }
     }
+
+    abstract protected LassoDrawOperation createLassoDrawOperation();
 
 
     // creates the dashed rectangle shape for the selection box
