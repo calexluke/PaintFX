@@ -49,6 +49,10 @@ public class PencilTool extends LineTool {
         PencilDrawOperation pencilOp = new PencilDrawOperation(xValues, yValues, color, relativeLineWidth);
         return pencilOp;
     }
+
+    public String toString() {
+        return "Pencil tool";
+    }
 }
 
 

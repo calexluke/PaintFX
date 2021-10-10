@@ -65,5 +65,9 @@ public class LineTool extends PaintFxTool {
         LineDrawOperation lineOp = new LineDrawOperation(startX, startY, relativeX, relativeY, color, relativeLineWidth);
         return lineOp;
     }
+
+    public String toString() {
+        return "Line tool";
+    }
 }
 

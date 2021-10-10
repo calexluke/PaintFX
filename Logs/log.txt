@@ -1,2 +1,13 @@
-Test Log
-A Second Test Log
+New tool selected: Mouse tool
+New tool selected: Pencil tool
+New tool selected: Line tool
+New tool selected: Eraser tool
+New tool selected: Square tool
+New tool selected: Rectangle tool
+New tool selected: Rounded Rectangle tool
+New tool selected: Circle tool
+New tool selected: Oval tool
+New tool selected: Polygon tool
+New tool selected: Text tool
+New tool selected: Lasso tool
+New tool selected: Color Grab tool

@@ -16,4 +16,8 @@ public class PolygonTool extends ShapeTool {
                 relativeLineWidth, strokeColor, fillColor, nPoints);
         return polygonOp;
     }
+
+    public String toString() {
+        return "Polygon tool";
+    }
 }

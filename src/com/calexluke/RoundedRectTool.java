@@ -13,4 +13,8 @@ public class RoundedRectTool extends RectTool {
                 relativeLineWidth, strokeColor, fillColor);
         return rectOp;
     }
+
+    public String toString() {
+        return "Rounded Rectangle tool";
+    }
 }

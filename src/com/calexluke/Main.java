@@ -82,11 +82,9 @@ public class Main extends Application {
         displayMainImageInCurrentTab();
         scaleBorderPaneToSceneSize();
 
+        // fresh log file for each run of the program
         PaintFxLogger logger = new PaintFxLogger();
         logger.clearLogFile();
-        logger.writeToLog("Test Log");
-        logger.writeToLog("A Second Test Log");
-
     }
 
     public static void main(String[] args) {

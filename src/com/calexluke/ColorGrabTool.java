@@ -28,4 +28,8 @@ public class ColorGrabTool extends PaintFxTool {
         colorPicker.setValue(color);
         stateManager.setStrokeColor(color);
     }
+
+    public String toString() {
+        return "Color Grab tool";
+    }
 }

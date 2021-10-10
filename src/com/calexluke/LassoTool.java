@@ -200,4 +200,8 @@ public class LassoTool extends  ShapeTool {
             graphicsContext.drawImage(selectedSnapshot, localX, localY);
         }
     }
+
+    public String toString() {
+        return "Lasso tool";
+    }
 }

@@ -13,4 +13,8 @@ public class RectTool extends ShapeTool {
                 relativeLineWidth, strokeColor, fillColor);
         return rectOp;
     }
+
+    public String toString() {
+        return "Rectangle tool";
+    }
 }

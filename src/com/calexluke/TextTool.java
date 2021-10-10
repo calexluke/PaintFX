@@ -99,4 +99,8 @@ public class TextTool extends PaintFxTool {
             }
         }
     }
+
+    public String toString() {
+        return "Text tool";
+    }
 }

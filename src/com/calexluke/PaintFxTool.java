@@ -16,4 +16,8 @@ public class PaintFxTool {
     public void onMouseReleased(MouseEvent e, GraphicsContext graphicsContext) { }
     public void onDrag(MouseEvent e, GraphicsContext graphicsContext) { }
 
+    public String toString() {
+        return "PaintFx tool";
+    }
+
 }

@@ -15,4 +15,8 @@ public class SquareTool extends RectTool {
                 relativeLineWidth, strokeColor, fillColor);
         return squareOp;
     }
+
+    public String toString() {
+        return "Square tool";
+    }
 }

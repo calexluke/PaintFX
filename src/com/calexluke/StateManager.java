@@ -76,6 +76,9 @@ public class StateManager {
             ((TextTool) selectedTool).removeTextFieldsFromPane();
         }
         selectedTool = tool;
+
+        PaintFxLogger logger = new PaintFxLogger();
+        logger.writeToLog("New tool selected: " + tool);
     }
     public void setStrokeColor(Color color) {
         strokeColor = color;

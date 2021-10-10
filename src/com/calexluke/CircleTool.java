@@ -19,4 +19,8 @@ public class CircleTool extends OvalTool {
 
         return circleOp;
     }
+
+    public String toString() {
+        return "Circle tool";
+    }
 }

@@ -14,4 +14,8 @@ public class OvalTool extends ShapeTool {
                 relativeLineWidth, strokeColor, fillColor);
         return ovalOp;
     }
+
+    public String toString() {
+        return "Oval tool";
+    }
 }

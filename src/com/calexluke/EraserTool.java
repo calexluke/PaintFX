@@ -41,4 +41,8 @@ public class EraserTool extends PencilTool {
         return lineOp;
     }
 
+    public String toString() {
+        return "Eraser tool";
+    }
+
 }
