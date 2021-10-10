@@ -32,6 +32,10 @@ public class Constants {
     static public String OVAL_SHAPE = "Oval";
     static public String POLYGON_SHAPE = "Polygon";
 
+    static public String CUT_AND_DRAG = "Cut and Drag";
+    static public String COPY_AND_DRAG = "Copy and Drag";
+    static public String CROP = "Crop";
+
     static public String aboutAlertTitle = "About Pain(t)";
     static public String helpAlertTitle = "How to Use";
 

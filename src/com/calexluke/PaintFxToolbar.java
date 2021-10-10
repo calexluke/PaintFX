@@ -27,6 +27,14 @@ public class PaintFxToolbar extends ToolBar {
     private ComboBox shapeToolComboBox;
     private HashMap<String, ShapeTool> shapeToolsMap;
 
+    private ShapeTool selectedLassoTool;
+    private ComboBox lassoToolComboBox;
+    private HashMap<String, LassoTool> lassoToolsMap;
+
+    ToggleGroup toggleGroup;
+    ToggleButton shapeToolButton;
+    ToggleButton lassoButton;
+
 
     public PaintFxToolbar(StateManager stateManager) {
         super();
@@ -41,8 +49,10 @@ public class PaintFxToolbar extends ToolBar {
         this.getItems().add(toolVbox);
         this.setOrientation(Orientation.VERTICAL);
         configureShapeToolMap();
+        configureLassoToolMap();
         configurePolygonSlider();
         configureShapeToolComboBox();
+        configureLassoToolComboBox();
         configureToggleButtons();
         configureStrokeWidthComboBox();
         configureColorPickers();
@@ -62,6 +72,14 @@ public class PaintFxToolbar extends ToolBar {
         shapeToolsMap.put(Constants.CIRCLE_SHAPE, new CircleTool());
         shapeToolsMap.put(Constants.OVAL_SHAPE, new OvalTool());
         shapeToolsMap.put(Constants.POLYGON_SHAPE, new PolygonTool());
+    }
+
+    // For selection of shape drawing tool object with string key from Constants
+    private void configureLassoToolMap() {
+        lassoToolsMap = new HashMap<>();
+        lassoToolsMap.put(Constants.CUT_AND_DRAG, new LassoTool());
+        lassoToolsMap.put(Constants.COPY_AND_DRAG, new LassoTool());
+        lassoToolsMap.put(Constants.CROP, new LassoTool());
     }
 
     private void configurePolygonSlider() {
@@ -95,14 +113,14 @@ public class PaintFxToolbar extends ToolBar {
 
     private void configureToggleButtons() {
         // toggle group allows selection of only one button at a time
-        ToggleGroup toggleGroup = new ToggleGroup();
+        toggleGroup = new ToggleGroup();
         ToggleButton mouseButton = new ToggleButton();
         ToggleButton pencilButton = new ToggleButton();
         ToggleButton eraseButton = new ToggleButton();
         ToggleButton lineButton = new ToggleButton();
-        ToggleButton shapeToolButton = new ToggleButton();
+        shapeToolButton = new ToggleButton();
         ToggleButton textButton = new ToggleButton();
-        ToggleButton lassoButton = new ToggleButton();
+        lassoButton = new ToggleButton();
         ToggleButton colorGrabButton = new ToggleButton();
 
         // set icons
@@ -142,7 +160,7 @@ public class PaintFxToolbar extends ToolBar {
         lineButton.setOnAction(e -> stateManager.setSelectedTool(new LineTool()));
         shapeToolButton.setOnAction(e -> stateManager.setSelectedTool(selectedShapeTool));
         textButton.setOnAction(e -> stateManager.setSelectedTool(new TextTool()));
-        lassoButton.setOnAction(e -> stateManager.setSelectedTool(new LassoTool()));
+        lassoButton.setOnAction(e -> stateManager.setSelectedTool(selectedLassoTool));
         colorGrabButton.setOnAction(e -> stateManager.setSelectedTool(new ColorGrabTool(strokeColorPicker, stateManager)));
 
         // add to toggle group
@@ -155,6 +173,8 @@ public class PaintFxToolbar extends ToolBar {
         toggleGroup.getToggles().add(lassoButton);
         toggleGroup.getToggles().add(colorGrabButton);
 
+        toggleGroup.selectToggle(mouseButton);
+
         // layout in vbox
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(mouseButton);
@@ -166,8 +186,9 @@ public class PaintFxToolbar extends ToolBar {
         toolVbox.getChildren().add(shapeToolComboBox);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(textButton);
-        toolVbox.getChildren().add(lassoButton);
         toolVbox.getChildren().add(colorGrabButton);
+        toolVbox.getChildren().add(lassoButton);
+        toolVbox.getChildren().add(lassoToolComboBox);
         toolVbox.getChildren().add(new Label(" "));
         toolVbox.getChildren().add(getCenteredTextLabel("Polygon sides"));
         toolVbox.getChildren().add(polygonSlider);
@@ -188,6 +209,23 @@ public class PaintFxToolbar extends ToolBar {
         shapeToolComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
             selectedShapeTool = shapeToolsMap.get(newValue);
             stateManager.setSelectedTool(selectedShapeTool);
+            toggleGroup.selectToggle(shapeToolButton);
+        });
+    }
+
+    private void configureLassoToolComboBox() {
+        lassoToolComboBox = new ComboBox<String>();
+        lassoToolComboBox.setMaxWidth(Double.MAX_VALUE);
+        lassoToolComboBox.getItems().addAll (
+                Constants.CUT_AND_DRAG,
+                Constants.COPY_AND_DRAG,
+                Constants.CROP
+        );
+        lassoToolComboBox.setValue(Constants.CUT_AND_DRAG);
+        lassoToolComboBox.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            selectedLassoTool = lassoToolsMap.get(newValue);
+            stateManager.setSelectedTool(selectedLassoTool);
+            toggleGroup.selectToggle(lassoButton);
         });
     }
 

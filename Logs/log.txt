@@ -1,4 +1,5 @@
-2021/10/10 13:13:35 New tool selected: Pencil tool
-2021/10/10 13:13:36 New tool selected: Line tool
-2021/10/10 13:13:36 New tool selected: Eraser tool
-2021/10/10 13:13:44 Image saved to /Users/alex/Desktop/Untitled.png
+2021/10/10 14:00:34 New tool selected: Lasso tool
+2021/10/10 14:00:42 New tool selected: Lasso tool
+2021/10/10 14:00:49 New tool selected: Lasso tool
+2021/10/10 14:00:56 New tool selected: Rounded Rectangle tool
+2021/10/10 14:00:58 New tool selected: Polygon tool
