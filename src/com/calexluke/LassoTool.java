@@ -14,8 +14,8 @@ import javafx.scene.paint.Paint;
 // user can drag and drop the snapshot from the selected area
 abstract public class LassoTool extends  ShapeTool {
 
-    private WritableImage selectedSnapshot;
-    private LassoDrawOperation lassoOperation;
+    protected WritableImage selectedSnapshot;
+    protected LassoDrawOperation lassoOperation;
     private LassoMode currentMode = LassoMode.SELECTION;
 
     // parameters for the selection box
@@ -143,7 +143,7 @@ abstract public class LassoTool extends  ShapeTool {
     }
 
     // operation to draw the snapshot after it has been moved
-    private ImageDrawOperation createImageDrawOperation(MouseEvent e, GraphicsContext graphicsContext) {
+    protected ImageDrawOperation createImageDrawOperation(MouseEvent e, GraphicsContext graphicsContext) {
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         double relativeSnapshotWidth = selectedSnapshot.getWidth() / canvas.getWidth();
         double relativeSnapshotHeight = selectedSnapshot.getHeight() / canvas.getHeight();
