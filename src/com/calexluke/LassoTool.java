@@ -135,10 +135,7 @@ abstract public class LassoTool extends  ShapeTool {
     // creates the dashed rectangle shape for the selection box
     @Override
     protected ShapeDrawOperation createShapeOperation(GraphicsContext graphicsContext) {
-        Paint strokeColor = graphicsContext.getStroke();
-        Paint fillColor = graphicsContext.getFill();
-        RectDrawOperation rectOp = new DashedRectDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight,
-                relativeLineWidth, strokeColor, fillColor);
+        RectDrawOperation rectOp = new DashedRectDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight);
         return rectOp;
     }
 
