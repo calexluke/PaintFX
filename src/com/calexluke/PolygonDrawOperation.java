@@ -5,10 +5,14 @@ import javafx.scene.paint.Paint;
 
 public class PolygonDrawOperation extends ShapeDrawOperation {
 
-    // vertex points of the polygon, scaled to canvas size
+    /**
+     * vertex points of the polygon, scaled to canvas size
+     */
     private double[] xPoints;
     private double[] yPoints;
-    // number of points in polygon
+    /**
+     * number of points in polygon
+     */
     private final int nPoints;
 
 

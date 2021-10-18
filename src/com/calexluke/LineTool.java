@@ -4,7 +4,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Paint;
 
-// tool for drawing a straight line on  the canvas
+/**
+ *  tool for drawing a straight line on  the canvas
+ */
 
 public class LineTool extends PaintFxTool {
 

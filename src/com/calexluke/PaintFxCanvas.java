@@ -8,7 +8,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
-// class for handling drawing and other canvas-related things
+/**
+ * class for handling drawing and other canvas-related things
+ */
 
 public class PaintFxCanvas extends Canvas {
 
@@ -63,7 +65,9 @@ public class PaintFxCanvas extends Canvas {
         graphicsContext.drawImage(image, 0, 0, this.getWidth(), this.getHeight());
     }
 
-    // called when user wants to draw a graphic - ensure color and stroke width are up to date with user preferences
+    /**
+     * called when user wants to draw a graphic - ensure color and stroke width are up to date with user preferences
+     */
     public void updateGraphicsContext() {
         updateStrokeWidth();
         updateColors();
@@ -202,10 +206,12 @@ public class PaintFxCanvas extends Canvas {
         }
     }
 
+    /**
+     * workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
+     * will be scaled to maintain aspect ratio, so you can't read it directly off of the view object.
+     * from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
+     */
     private void scaleCanvasToImageSize() {
-        // workaround for aspect ratio issues - need to find the actual width and height of the view. One or the other
-        // will be scaled to maintain aspect ratio, so you can't read it directly off of the view object.
-        // from https://stackoverflow.com/questions/39408845/how-to-get-width-height-of-displayed-image-in-javafx-imageview
         setWidth(getActualImageViewWidth());
         setHeight(getActualImageViewHeight());
     }

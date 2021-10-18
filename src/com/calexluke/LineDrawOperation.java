@@ -5,7 +5,9 @@ import javafx.scene.paint.Paint;
 
 public class LineDrawOperation implements DrawOperation {
 
-    // parameters as a proportion of canvas size
+    /**
+     *  parameters as a proportion of canvas size
+     */
     double relativeStartX;
     double relativeStartY;
     double relativeEndX;
@@ -13,7 +15,9 @@ public class LineDrawOperation implements DrawOperation {
     double relativeLineWidth;
     Paint strokeColor;
 
-    // parameters scaled to actual coordinates based on the current canvas size
+    /**
+     * parameters scaled to actual coordinates based on the current canvas size
+     */
     double scaledStartX;
     double scaledStartY;
     double scaledEndX;

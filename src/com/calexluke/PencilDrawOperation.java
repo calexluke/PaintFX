@@ -7,8 +7,10 @@ import java.util.ArrayList;
 
 public class PencilDrawOperation implements DrawOperation {
 
-    // parameters as a proportion of canvas size
-    // store the list of points the hand drawn line goes through
+    /**
+     * parameters as a proportion of canvas size
+     * store the list of points the hand drawn line goes through
+     */
     ArrayList<Double> relativeXValues;
     ArrayList<Double> relativeYValues;
     double relativeLineWidth;

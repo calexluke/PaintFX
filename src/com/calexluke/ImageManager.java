@@ -8,7 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-// class for handling Image Operations
+/**
+ * class for handling Image Operations
+ */
 
 public class ImageManager {
 
@@ -16,7 +18,11 @@ public class ImageManager {
         return getImageFromAssets(Constants.LOGO_IMAGE_PATH);
     }
 
-    // create Image object from image file in assets folder
+    /**
+     *
+     * @param pathToAsset
+     * @return Image object from image file in assets folder
+     */
     public Image getImageFromAssets(String pathToAsset) {
         Image image = null;
         try {
@@ -27,7 +33,11 @@ public class ImageManager {
         return image;
     }
 
-    // create Image object from image file in user's local file system
+    /**
+     *
+     * @param filePath
+     * @return Image object from image file in user's local file system
+     */
     public Image getImageFromFilePath(String filePath) {
         Image image = null;
         try {
@@ -38,7 +48,11 @@ public class ImageManager {
         return image;
     }
 
-    // take snapshot of canvas/image 'stack' to save
+    /**
+     *
+     * @param canvas
+     * @return snapshot of canvas/image 'stack' to save
+     */
     public WritableImage getSnapshotImageToSave(PaintFxCanvas canvas) {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
@@ -47,7 +61,11 @@ public class ImageManager {
         return  writableImage;
     }
 
-    // convert image to the proper format to save as jpg
+    /**
+     *
+     * @param image
+     * @return image converted to the proper format to save as jpg
+     */
     public BufferedImage getBufferedImageForJPG(WritableImage image) {
         BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
         BufferedImage convertedImage = new BufferedImage(bufferedImage.getWidth(),

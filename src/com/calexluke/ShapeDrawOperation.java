@@ -5,7 +5,9 @@ import javafx.scene.paint.Paint;
 
 public abstract class ShapeDrawOperation implements DrawOperation {
 
-    // parameters as a proportion of canvas size
+    /**
+     * parameters as a proportion of canvas size
+     */
     double relativeTopLeftX;
     double relativeTopLeftY;
     double relativeWidth;
@@ -14,7 +16,9 @@ public abstract class ShapeDrawOperation implements DrawOperation {
     Paint strokeColor;
     Paint fillColor;
 
-    // parameters scaled to actual coordinates based on the current canvas size
+    /**
+     * parameters scaled to actual coordinates based on the current canvas size
+     */
     double scaledX;
     double scaledY;
     double scaledWidth;

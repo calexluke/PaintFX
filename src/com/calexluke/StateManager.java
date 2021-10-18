@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
 
-
-/*
-Class to maintain the 'state' of the app.
-Keep track of user settings/preferences, and serve that info to other classes which act on it.
-*/
-
+/**
+ * Class to maintain the 'state' of the app.
+ * Keep track of user settings/preferences, and serve that info to other classes which act on it.
+ */
 public class StateManager {
 
     public enum StrokeWidth {
@@ -28,7 +26,9 @@ public class StateManager {
     }
 
     private ArrayList<Image> imageArray;
-    // stores autoSaved images, indexed by tab
+    /**
+     * stores autoSaved images, indexed by tab
+     */
     private HashMap<Integer, Image> autoSaveImagesMap;
     private PaintFxTool selectedTool;
     private StrokeWidth selectedStrokeWidth;
@@ -161,8 +161,11 @@ public class StateManager {
         preferences.putInt(Constants.TIMER_PREFS_KEY, autoSaveCounterMax);
     }
 
+    /**
+     *
+     * @return 120 if preference not defined
+     */
     private int getCounterValueFromPreferences() {
-        // returns 120 if preference not defined
         return preferences.getInt(Constants.TIMER_PREFS_KEY, 120);
     }
 

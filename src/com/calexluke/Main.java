@@ -14,8 +14,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import java.io.*;
 import java.util.Optional;
 
 
@@ -38,7 +36,9 @@ public class Main extends Application {
     private Boolean commandIsDown = false;
     private Boolean shiftIsDown = false;
 
-    // default values, approximations of widths of border elements. These are reset dynamically after init
+    /**
+     * default values, approximations of widths of border elements. These are reset dynamically after init
+     */
     private Double imageWidthOffset = 178.0;
     private Double imageHeightOffset = 84.0;
 
@@ -352,8 +352,10 @@ public class Main extends Application {
         displayMainImageInCurrentTab();
     }
 
-    // re-initialize mainImageView and repopulate stackpane with imageview and canvas
-    // using imageView to handle aspect ratio stuff
+    /**
+     * re-initialize mainImageView and repopulate stackpane with imageview and canvas
+     * using imageView to handle aspect ratio stuff
+     */
     private void displayMainImageInCurrentTab() {
         Image image = stateManager.getImageFromCurrentTab();
 
@@ -439,12 +441,12 @@ public class Main extends Application {
 
     //region Scrollbars
 
-    /*
-    The scroll bar will translate the image by the scrollbar's value.
-    These methods will dynamically update the bounds of the scroll bar based on how far the image is "offscreen."
-    The lower and upper bounds of the scrollbar will be the amount the image needs to be translated to be back
-    "onscreen."
-    */
+    /**
+     * The scroll bar will translate the image by the scrollbar's value.
+     *     These methods will dynamically update the bounds of the scroll bar based on how far the image is "offscreen."
+     *     The lower and upper bounds of the scrollbar will be the amount the image needs to be translated to be back
+     *     "onscreen."
+     */
     private void updateScrollBars() {
         Node stackPane = tabPane.getTabs().get(stateManager.getSelectedTabIndex()).getContent();
         Bounds imageBoundsInScene = stackPane.localToScene(stackPane.getBoundsInLocal());

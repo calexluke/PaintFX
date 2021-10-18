@@ -5,7 +5,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-// Eraser tool is functions identically to pencil tool, but always draws with a thick white line
+/**
+ * Eraser tool is functions identically to pencil tool, but always draws with a thick white line
+ */
 
 public class EraserTool extends PencilTool {
 
@@ -25,7 +27,11 @@ public class EraserTool extends PencilTool {
         startY = relativeY;
     }
 
-    // called in LineTool onMouseReleased, to store the entire pencil drawing operation
+    /**
+     * called in LineTool onMouseReleased, to store the entire pencil drawing operation
+     * @param graphicsContext
+     * @return
+     */
     @Override
     protected DrawOperation createDrawOperation(GraphicsContext graphicsContext) {
         Paint color = Color.WHITE;

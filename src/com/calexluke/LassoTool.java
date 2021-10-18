@@ -7,11 +7,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
-// lasso tool does the following: displays dashed rect around user-selected area,
-// takes snapshot of image inside selected area,
-// user can drag and drop the snapshot from the selected area
+/**
+ * lasso tool does the following: displays dashed rect around user-selected area,
+ * takes snapshot of image inside selected area,
+ * user can drag and drop the snapshot from the selected area
+ */
 abstract public class LassoTool extends  ShapeTool {
 
     protected WritableImage selectedSnapshot;
@@ -132,14 +133,23 @@ abstract public class LassoTool extends  ShapeTool {
     abstract protected LassoDrawOperation createLassoDrawOperation();
 
 
-    // creates the dashed rectangle shape for the selection box
+    /**
+     * creates the dashed rectangle shape for the selection box
+     * @param graphicsContext
+     * @return dashed rectangle drawing operation
+     */
     @Override
     protected ShapeDrawOperation createShapeOperation(GraphicsContext graphicsContext) {
         RectDrawOperation rectOp = new DashedRectDrawOperation(relativeTopLeftX, relativeTopLeftY, relativeWidth, relativeHeight);
         return rectOp;
     }
 
-    // operation to draw the snapshot after it has been moved
+    /**
+     *
+     * @param e mouse event
+     * @param graphicsContext
+     * @return operation to draw the snapshot after it has been moved
+     */
     protected ImageDrawOperation createImageDrawOperation(MouseEvent e, GraphicsContext graphicsContext) {
         PaintFxCanvas canvas = (PaintFxCanvas) graphicsContext.getCanvas();
         double relativeSnapshotWidth = selectedSnapshot.getWidth() / canvas.getWidth();

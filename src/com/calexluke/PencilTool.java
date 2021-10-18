@@ -6,12 +6,16 @@ import javafx.scene.paint.Paint;
 
 import java.util.ArrayList;
 
-// tool for freehand drawing on canvas
-// creates line on drag instead of on release
+/**
+ * tool for freehand drawing on canvas
+ * creates line on drag instead of on release
+ */
 
 public class PencilTool extends LineTool {
 
-    // store the list of points the hand drawn line goes through
+    /**
+     * store the list of points the hand drawn line goes through
+     */
     protected ArrayList<Double> xValues;
     protected ArrayList<Double> yValues;
 
@@ -42,7 +46,11 @@ public class PencilTool extends LineTool {
         startY = relativeY;
     }
 
-    // called in LineTool onMouseReleased, to store the entire pencil drawing operation
+    /**
+     * called in LineTool onMouseReleased, to store the entire pencil drawing operation
+     * @param graphicsContext
+     * @return pencil draw operation
+     */
     @Override
     protected DrawOperation createDrawOperation(GraphicsContext graphicsContext) {
         Paint color = graphicsContext.getStroke();

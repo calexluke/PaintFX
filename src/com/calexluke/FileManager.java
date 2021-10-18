@@ -9,11 +9,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-// Class for handling file system operations
+/**
+ * Class for handling file system operations
+ */
 
 public class FileManager {
 
-    // stage reference is needed to display file pickers
+    /**
+     * stage reference is needed to display file pickers
+     */
     private Stage stage;
     private StateManager stateManager;
 
@@ -33,7 +37,11 @@ public class FileManager {
 
     //region Public Methods
 
-    // Returns null if user exits file chooser without making a selection
+    /**
+     *
+     * @param stage to display the file chooser window
+     * @return Returns file path, or null if user exits file chooser without making a selection
+     */
     public String getImageFilePathFromUser(Stage stage) {
         String path = null;
         FileChooser fileChooser = new FileChooser();
@@ -49,7 +57,10 @@ public class FileManager {
         return path;
     }
 
-    // user chooses new file path to save to
+    /**
+     * user chooses new file path to save to
+     * @param image to save
+     */
     public void saveImageAs(WritableImage image) {
         String filePath = getSaveAsFilePathFromUser();
         if (filePath != null) {
@@ -58,7 +69,10 @@ public class FileManager {
         }
     }
 
-    // if filepath already exists, save there. If not, save as.
+    /**
+     * if filepath already exists, save there. If not, save as.
+     * @param image to save
+     */
     public void saveImage(WritableImage image) {
         String filePath = stateManager.getSaveAsFilePathForCurrentTab();
         if (filePath != null) {

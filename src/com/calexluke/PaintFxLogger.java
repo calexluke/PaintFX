@@ -6,6 +6,13 @@ import java.time.format.DateTimeFormatter;
 
 public class PaintFxLogger {
 
+    /**
+     * Handles saving log messages to a text file
+     */
+
+    /**
+     * Clear log file for a fresh log each run of the program
+     */
     public void clearLogFile() {
         // file I/O in new thread
         new Thread(() -> {
