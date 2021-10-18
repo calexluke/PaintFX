@@ -93,26 +93,26 @@ public class Main extends Application {
 
     private void quitApplication() {
         // handle more shutdown stuff here
-
-        if (stateManager.getHasUnsavedChanges()) {
-            displaySmartSaveAlert();
-        } else {
-            System.exit(0);
+        for (int i = 0; i < tabPane.getTabs().size(); i++) {
+            if (stateManager.hasUnsavedChangesAtIndex(i)) {
+                displaySmartSaveAlertForTab(i);
+            }
         }
+        System.exit(0);
     }
 
-    private void displaySmartSaveAlert() {
+    private void displaySmartSaveAlertForTab(int index) {
         ButtonType save = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
         ButtonType quit = new ButtonType("Exit Without Saving", ButtonBar.ButtonData.OK_DONE);
-        Alert alert = new Alert(Alert.AlertType.WARNING, "You have unsaved changes!", save, quit);
+        Alert alert = new Alert(Alert.AlertType.WARNING, "You have unsaved changes in tab " + (index + 1), save, quit);
         alert.setTitle("Unsaved changes!");
         Optional<ButtonType> result = alert.showAndWait();
 
         if (result.get() == save) {
-            fileManager.saveImage(imageManager.getSnapshotImageToSave(getCurrentCanvas()));
-            System.exit(0);
-        } else if (result.get() == quit) {
-            System.exit(0);
+            PaintFxCanvas canvas = getCanvasAtIndex(index);
+            if (canvas != null) {
+                fileManager.saveImage(imageManager.getSnapshotImageToSave(canvas));
+            }
         }
     }
 
@@ -182,6 +182,7 @@ public class Main extends Application {
         tab.setContent(stackPane);
         tabPane.getTabs().add(tab);
         configureCanvasInTab(newTabIndex);
+        stateManager.addTabToUnsavedChangedArray();
     }
 
 
@@ -479,6 +480,20 @@ public class Main extends Application {
         for (Node child : stackPane.getChildren()) {
             if (child instanceof PaintFxCanvas) {
                 canvas = (PaintFxCanvas) child;
+            }
+        }
+        return canvas;
+    }
+
+    private PaintFxCanvas getCanvasAtIndex(int index) {
+        PaintFxCanvas canvas = null;
+        if (tabPane.getTabs().get(index) != null) {
+            Tab selectedTab = tabPane.getTabs().get(index);
+            StackPane stackPane = (StackPane) selectedTab.getContent();
+            for (Node child : stackPane.getChildren()) {
+                if (child instanceof PaintFxCanvas) {
+                    canvas = (PaintFxCanvas) child;
+                }
             }
         }
         return canvas;

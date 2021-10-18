@@ -164,7 +164,7 @@ public class PaintFxCanvas extends Canvas {
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onMouseReleased(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
-            stateManager.setHasUnsavedChanges(true);
+            stateManager.setUnsavedChangesAtCurrentIndex(true);
         }
     }
 
@@ -173,7 +173,7 @@ public class PaintFxCanvas extends Canvas {
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onDrag(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
-            stateManager.setHasUnsavedChanges(true);
+            stateManager.setUnsavedChangesAtCurrentIndex(true);
         }
     }
 
@@ -182,7 +182,7 @@ public class PaintFxCanvas extends Canvas {
         PaintFxTool tool = stateManager.getSelectedTool();
         tool.onMousePressed(e, graphicsContext);
         if (tool.makesChangesToCanvas) {
-            stateManager.setHasUnsavedChanges(true);
+            stateManager.setUnsavedChangesAtCurrentIndex(true);
         }
     }
 

@@ -103,7 +103,7 @@ public class FileManager {
                     ImageIO.write(convertedImage, "bmp", outFile);
                 }
             }
-            stateManager.setHasUnsavedChanges(false);
+            stateManager.setUnsavedChangesAtCurrentIndex(false);
 
             PaintFxLogger logger = new PaintFxLogger();
             logger.writeToLog("Image saved to " + filePath);

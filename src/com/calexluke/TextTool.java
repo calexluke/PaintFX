@@ -10,8 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 
-import java.util.ArrayList;
-
 public class TextTool extends PaintFxTool {
 
     TextField textField;
@@ -31,8 +29,6 @@ public class TextTool extends PaintFxTool {
         // if text field exists, render text in its position, and remove it
         // if text field does not exist, create it
         this.graphicsContext = graphicsContext;
-
-        StackPane pane = (StackPane) graphicsContext.getCanvas().getParent();
         if (textField != null) {
             calculateScaledParameters(e, graphicsContext);
             createTextDrawOperation(graphicsContext);

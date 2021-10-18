@@ -35,7 +35,7 @@ public class StateManager {
     private int selectedPolygonSides;
     private Color strokeColor;
     private Color fillColor;
-    private Boolean hasUnsavedChanges;
+    private ArrayList<Boolean> unsavedChangesArray;
     private int selectedTabIndex;
     private HashMap<Integer, String> saveAsFilePathMap;
     private Preferences preferences;
@@ -50,7 +50,8 @@ public class StateManager {
         selectedStrokeWidth = StrokeWidth.THIN;
         strokeColor = Color.BLACK;
         fillColor = Color.BLACK;
-        hasUnsavedChanges = false;
+        unsavedChangesArray = new ArrayList<>();
+        unsavedChangesArray.add(false);
         saveAsFilePathMap = new HashMap<>();
         autoSaveImagesMap = new HashMap<>();
         selectedTabIndex = 0;
@@ -94,9 +95,6 @@ public class StateManager {
         saveAsFilePathMap.put(selectedTabIndex, filePath);
     }
     public void setAutoSaveImageForCurrentTab(Image image) { autoSaveImagesMap.put(selectedTabIndex, image); }
-    public void setHasUnsavedChanges(Boolean hasChanges) {
-        hasUnsavedChanges = hasChanges;
-    }
     public void setSelectedTabIndex(int index) {
         selectedTabIndex = index;
     }
@@ -106,6 +104,8 @@ public class StateManager {
         saveCounterToPreferences();
     }
     public final void setAutoSaveCounter(int value) { autoSaveCounter.set(value); }
+    public void setUnsavedChangesAtCurrentIndex(boolean hasUnsavedChanges) { unsavedChangesArray.set(selectedTabIndex, hasUnsavedChanges); }
+    public void addTabToUnsavedChangedArray() { unsavedChangesArray.add(false); }
 
     // getters
 
@@ -131,13 +131,12 @@ public class StateManager {
     public Image getAutoSaveImageForCurrentTab() {
         return autoSaveImagesMap.get(selectedTabIndex);
     }
-    public Boolean getHasUnsavedChanges() {
-        return hasUnsavedChanges;
-    }
     public int getSelectedTabIndex() { return  selectedTabIndex; }
     public final int getAutoSaveCounter() { return autoSaveCounter.get(); }
     public int getAutoSaveCounterMax() { return autoSaveCounterMax; }
     public IntegerProperty autoSaveCounterProperty() { return autoSaveCounter; }
+    public boolean hasUnsavedChangesAtIndex(int index) { return unsavedChangesArray.get(index); }
+
 
 //region Timer
 
